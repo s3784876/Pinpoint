@@ -166,7 +166,10 @@ namespace Pinpoint.Globe
       }
     }
 
-    public abstract void simulate();
-    public abstract void Step();
+    //Called to perform all the calculations to get the mesh to a completed state
+    public abstract void Simulate();
+
+    //Called to perform a single permutation on the face
+    protected abstract void Step();
   }
 }

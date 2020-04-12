@@ -45,9 +45,16 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Building\ClimateVertex.cs" />
-     <Compile Include="Assets\Building\HeightVertex.cs" />
-     <Compile Include="Assets\Building\WindVertex.cs" />
+     <Compile Include="Assets\Globe\AMesh.cs" />
+     <Compile Include="Assets\Globe\ClimateMesh.cs" />
+     <Compile Include="Assets\Globe\ClimateVertex.cs" />
+     <Compile Include="Assets\Globe\Globe.cs" />
+     <Compile Include="Assets\Globe\GlobeFace.cs" />
+     <Compile Include="Assets\Globe\HeightMesh.cs" />
+     <Compile Include="Assets\Globe\HeightVertex.cs" />
+     <Compile Include="Assets\Globe\ISubsampleable.cs" />
+     <Compile Include="Assets\Globe\WindMesh.cs" />
+     <Compile Include="Assets\Globe\WindVertex.cs" />
      <Compile Include="Assets\Scripts\ColourSettings.cs" />
      <Compile Include="Assets\Scripts\ConditionalHideAttribute.cs" />
      <Compile Include="Assets\Scripts\INoiseFilter.cs" />

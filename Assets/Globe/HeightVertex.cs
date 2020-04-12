@@ -8,11 +8,11 @@ namespace Pinpoint.Globe
     float currentHeight;
 
     ClimateVertex climate;
-    SeasonalWindVertex wind;
+    AnualWindVertex wind;
 
     //Stores 4 bytes of information relevent to plotting errosion
-    /*  Byte 1  Has Vegitation
-        Byte 2  Is River
+    /*  Bit 1  Has Vegitation
+        Bit 2  Is River
      */
     private byte _Covering;
 
@@ -65,7 +65,7 @@ namespace Pinpoint.Globe
       }
     }
 
-    public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, SeasonalWindVertex wind, bool isRiver, bool hasVegitation)
+    public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, AnualWindVertex wind, bool isRiver, bool hasVegitation)
     {
       this.initialHeight = initialHeight;
       this.currentHeight = currentHeight;
@@ -110,6 +110,16 @@ namespace Pinpoint.Globe
       hv.initialHeight *= weight;
 
       return hv;
+    }
+
+    public bool IsChild(AnualWindVertex wv)
+    {
+
+    }
+
+    public bool IsChild(ClimateVertex cv)
+    {
+      
     }
   }
 }
