@@ -2,12 +2,12 @@ using System;
 
 namespace Pinpoint.Globe
 {
-  public class SeasonalWindVertex : ISupersampleable<SeasonalWindVertex>
+  public class AnualWindVertex : ISupersampleable<AnualWindVertex>
   {
     #region ISupersampleable
-    public SeasonalWindVertex Interpolate(SeasonalWindVertex opponent, float opponentWeight)
+    public AnualWindVertex Interpolate(AnualWindVertex opponent, float opponentWeight)
     {
-      SeasonalWindVertex wv1 = Scale((1 - opponentWeight) / 2),
+      AnualWindVertex wv1 = Scale((1 - opponentWeight) / 2),
       wv2 = opponent.Scale(opponentWeight / 2);
 
       for (int i = 0; i < seasons.Length; i++)
@@ -15,9 +15,9 @@ namespace Pinpoint.Globe
 
       return wv1;
     }
-    public SeasonalWindVertex Scale(float weight)
+    public AnualWindVertex Scale(float weight)
     {
-      SeasonalWindVertex wl = new SeasonalWindVertex(this);
+      AnualWindVertex wl = new AnualWindVertex(this);
 
       for (int i = 0; i < seasons.Length; i++)
           wl.seasons[i].Scale(weight);
@@ -52,12 +52,12 @@ namespace Pinpoint.Globe
       }
     }
 
-    public SeasonalWindVertex(SeasonalWindVertex swv)
+    public AnualWindVertex(AnualWindVertex swv)
     {
       this.seasons = swv.seasons;
     }
 
-    public SeasonalWindVertex()
+    public AnualWindVertex()
     {
       seasons = new WindVertex[2];
 

@@ -5,7 +5,9 @@ namespace Pinpoint.Globe
     {
         Vector3 LocalUp;
         int Resolution;
-        ClimateVertex[] ClimateVertices;
-        HeightVertex[] HeightVertices;
+
+        WindMesh WindMesh = new WindMesh();
+        ClimateMesh ClimateMesh = new ClimateMesh();
+        HeightMesh HeightMesh = new HeightMesh();
     }
 }
