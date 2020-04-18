@@ -34,7 +34,7 @@ namespace Pinpoint.Globe
             if (lat > EndLat || lat < StartLat)
                 throw new ArgumentOutOfRangeException();
 
-            //Plot heading as a liniar function of latitude, resulting in a parabolic path along a flat surface
+            //Plot heading as a linear function of latitude, resulting in a parabolic path along a flat surface
             return ((lat - StartLat) * Gradient + StartHeading) % 360;
         }
 

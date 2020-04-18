@@ -57,13 +57,13 @@ namespace Pinpoint.Globe
             POLAR_FROM_ANTARCTIC,
         }
 
-        private void SimulateCell(Cell currentLocal, bool isSummer)
+        private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
         {
-            lat = GetLat(currentLocal, isSummer);
+            WindVertex head;
 
             for (int i = 0; i < Faces[0].Resolution; i++)
             {
-                GetGlobalPoint(lat, 0);
+                head = GetGlobalPoint(lat, i);
             }
         }
 
