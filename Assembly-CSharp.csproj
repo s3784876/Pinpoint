@@ -45,10 +45,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Globe\AMesh.cs" />
      <Compile Include="Assets\Globe\AttributeGlobe.cs" />
+     <Compile Include="Assets\Globe\Faces\AMesh.cs" />
+     <Compile Include="Assets\Globe\Faces\GlobeFace.cs" />
      <Compile Include="Assets\Globe\Globe.cs" />
-     <Compile Include="Assets\Globe\GlobeFace.cs" />
      <Compile Include="Assets\Globe\Vertexes\ClimateMesh.cs" />
      <Compile Include="Assets\Globe\Vertexes\ClimateVertex.cs" />
      <Compile Include="Assets\Globe\Vertexes\HeightMesh.cs" />

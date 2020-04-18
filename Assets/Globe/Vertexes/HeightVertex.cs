@@ -1,7 +1,5 @@
 using System.Net;
 using Pinpoint.Globe;
-using Pinpoint.Globe.Wind;
-using Pinpoint.Globe.Climate;
 
 namespace Pinpoint.Globe.Vertexes
 {
