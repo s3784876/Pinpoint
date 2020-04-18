@@ -1,4 +1,4 @@
-﻿namespace Pinpoint.Assets.Globe.Vertexes
+﻿namespace Pinpoint.Globe.Vertexes
 {
     public class Interpolation<T> where T : ISupersamplable
     {

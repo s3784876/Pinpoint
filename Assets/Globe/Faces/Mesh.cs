@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Pinpoint.Globe.Faces
 {
-    public abstract class AMesh<T> where T : Pinpoint.Globe.ISupersampleable<T>
+    public class Mesh<T> where T : Pinpoint.Globe.ISupersampleable<T>
     {
         T[] Vertexes;
         Vector3 LocalUp;
@@ -11,7 +11,7 @@ namespace Pinpoint.Globe.Faces
         int Resolution;
 
         //Constructor
-        protected AMesh(Vector3 localUp, int resolution)
+        protected Mesh(Vector3 localUp, int resolution)
         {
             this.Vertexes = new T[resolution * resolution];
             LocalUp = localUp;
@@ -110,11 +110,5 @@ namespace Pinpoint.Globe.Faces
                     throw new IndexOutOfRangeException();
             }
         }
-
-        //Called to perform all the calculations to get the mesh to a completed state
-        public abstract void Simulate();
-
-        //Called to perform a single permutation on the face
-        protected abstract void Step();
     }
 }

@@ -1,14 +1,14 @@
-namespace Pinpoint.Assets.Globe
+namespace Pinpoint.Globe
 {
-    public class AttributeGlobe<M, T> where M : AMesh<T>
+    public abstract class AAttributeGlobe<T> where T : ISupersamplable
     {
         protected int Resolution;
 
-        protected M Faces = new M[6];
+        protected Mesh Faces = new Mesh[6];
 
         private enum FIndex { up, down, right, left, back, front }
 
-        public AttributeGlobe(int resolution)
+        public AAttributeGlobe(int resolution)
         {
             Vector3[] ups = {
               Vector3.Up,
@@ -21,14 +21,14 @@ namespace Pinpoint.Assets.Globe
 
             for (int i = 0; i < Faces.Length; i++)
             {
-                Faces[i] = new M(ups[i], resolution);
+                Faces[i] = new Mesh(ups[i], resolution);
             }
         }
 
         //Returns the point that a latitude and longitude are pointing to regardless of face
         protected T GetGlobalPoint(float latitude, float longitude)
         {
-            M mesh = FindFace(latitude, longitude);
+            Mesh mesh = FindFace(latitude, longitude);
 
             return mesh.GetPoint(latitude, longitude);
         }
@@ -37,19 +37,19 @@ namespace Pinpoint.Assets.Globe
         //TODO solve
         protected T GetGlobalInterpolatedPoint(float latitude, float longitude)
         {
-            M mesh = FindFace(latitude, longitude);
+            Mesh mesh = FindFace(latitude, longitude);
 
             return mesh.GetInterpolatedPoint(latitude, longitude);
         }
 
         //Locates and returns the face responsible for the lat and long provided 
-        public M FindFace(float latitude, float longitude)
+        public Mesh FindFace(float latitude, float longitude)
         {
             return GloballyMapPoints(ref latitude, ref longitude);
         }
 
         //Returns the mesh responsible for the point, and returns the x,y co-ords of the point on that mesh
-        public M GloballyMapPoints(ref float latitude, ref float longitude)
+        public Mesh GloballyMapPoints(ref float latitude, ref float longitude)
         {
             latitude = (float)(Math.PI * latitude / 180);
             longitude = (float)(Math.PI * longitude / 180);
@@ -88,5 +88,8 @@ namespace Pinpoint.Assets.Globe
                 return Faces[(int)FIndex.front + (z < 0 ? 1 : 0)];
             }
         }
+
+        //Called to perform all the calculations to get the mesh to a completed state
+        public abstract void Simulate();
     }
 }
