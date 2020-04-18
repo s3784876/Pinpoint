@@ -35,7 +35,7 @@ namespace Pinpoint.Globe
                 throw new ArgumentOutOfRangeException();
 
             //Plot heading as a liniar function of latitude, resulting in a parabolic path along a flat surface
-            return (lat - StartLat) * Gradient + StartHeading;
+            return ((lat - StartLat) * Gradient + StartHeading) % 360;
         }
 
         public float GetHeading(float lat, bool isSummer)
