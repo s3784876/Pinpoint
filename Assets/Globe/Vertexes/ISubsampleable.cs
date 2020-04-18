@@ -1,10 +1,10 @@
 using System;
 
-namespace Pinpoint.Globe
+namespace Pinpoint.Globe.Vertexes
 {
-  public interface ISupersampleable<T>
-  {
-    T Interpolate(T opponent, float weight);
-    T Scale(float weight);
-  }
+    public interface IInterpolatable<T>
+    {
+        T Interpolate(T opponent, float weight);
+        T Scale(float weight);
+    }
 }

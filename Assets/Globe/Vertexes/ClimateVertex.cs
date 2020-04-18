@@ -4,9 +4,9 @@ using Pinpoint.Globe;
 namespace Pinpoint.Globe.Vertexes
 {
 
-    public class ClimateVertex : ISupersampleable<ClimateVertex>
+    public class ClimateVertex : IInterpolatable<ClimateVertex>
     {
-        #region ISupersampleable
+        #region IInterpolatable
         public ClimateVertex Interpolate(ClimateVertex opponent, float opponentWeight)
         {
             ClimateVertex cv1 = Scale((1 - opponentWeight) / 2),
@@ -217,9 +217,9 @@ namespace Pinpoint.Globe.Vertexes
 
         #endregion
 
-        public class SeasonVertex : ISupersampleable<SeasonVertex>
+        public class SeasonVertex : IInterpolatable<SeasonVertex>
         {
-            #region ISupersampleable
+            #region IInterpolatable
             public SeasonVertex Interpolate(SeasonVertex opponent, float opponentWeight)
             {
                 SeasonVertex sv1 = Scale((1 - opponentWeight) / 2),

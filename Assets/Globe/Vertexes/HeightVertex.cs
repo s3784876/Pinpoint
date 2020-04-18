@@ -3,13 +3,13 @@ using Pinpoint.Globe;
 
 namespace Pinpoint.Globe.Vertexes
 {
-    public class HeightVertex : ISupersampleable<HeightVertex>
+    public class HeightVertex : IInterpolatable<HeightVertex>
     {
         float initialHeight;
         float currentHeight;
 
-        ClimateVertex climate;
-        AnualWindVertex wind;
+        Interpolation<ClimateVertex> climate;
+        Interpolation<WindVertex> wind;
 
         //Stores 4 bits of information relevent to plotting errosion
         /*  Bit 1   Has Vegitation
@@ -93,7 +93,7 @@ namespace Pinpoint.Globe.Vertexes
             }
         }
 
-        public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, AnualWindVertex wind, bool isRiver, bool hasVegitation, bool IsOcean)
+        public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, WindVertex wind, bool isRiver, bool hasVegitation, bool IsOcean)
         {
             this.initialHeight = initialHeight;
             this.currentHeight = currentHeight;
@@ -142,7 +142,7 @@ namespace Pinpoint.Globe.Vertexes
             return hv;
         }
 
-        public bool IsChild(AnualWindVertex wv)
+        public bool IsChild(WindVertex wv)
         {
 
         }

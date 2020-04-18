@@ -1,5 +1,6 @@
 using System.Diagnostics;
 
+using System;
 namespace Pinpoint.Globe
 {
     public class Globe
@@ -59,9 +60,14 @@ namespace Pinpoint.Globe
 
         public void SimulateGlobes()
         {
-            System.Console.WriteLine("Working on Height map");
-
+            Console.WriteLine("Working on Height map");
             HeightGlobe.Simulate();
+
+            Console.WriteLine("Working On wind map");
+            WindGlobe.Simulate();
+
+            Console.WriteLine("Working On climate Map");
+            ClimateGlobe.Simulate();
         }
     }
 }

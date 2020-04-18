@@ -3,12 +3,12 @@ using Pinpoint.Globe;
 
 namespace Pinpoint.Globe.Vertexes
 {
-    public class AnualWindVertex : ISupersampleable<AnualWindVertex>
+    public class WindVertex : IInterpolatable<WindVertex>
     {
-        #region ISupersampleable
-        public AnualWindVertex Interpolate(AnualWindVertex opponent, float opponentWeight)
+        #region IInterpolatable
+        public WindVertex Interpolate(WindVertex opponent, float opponentWeight)
         {
-            AnualWindVertex wv1 = Scale((1 - opponentWeight) / 2),
+            WindVertex wv1 = Scale((1 - opponentWeight) / 2),
             wv2 = opponent.Scale(opponentWeight / 2);
 
             for (int i = 0; i < seasons.Length; i++)
@@ -16,9 +16,9 @@ namespace Pinpoint.Globe.Vertexes
 
             return wv1;
         }
-        public AnualWindVertex Scale(float weight)
+        public WindVertex Scale(float weight)
         {
-            AnualWindVertex wl = new AnualWindVertex(this);
+            WindVertex wl = new WindVertex(this);
 
             for (int i = 0; i < seasons.Length; i++)
                 wl.seasons[i].Scale(weight);
@@ -27,9 +27,9 @@ namespace Pinpoint.Globe.Vertexes
         }
         #endregion
 
-        WindVertex[] seasons;
+        SeasonalWindVertex[] seasons;
 
-        WindVertex Summer
+        SeasonalWindVertex Summer
         {
             get
             {
@@ -41,7 +41,7 @@ namespace Pinpoint.Globe.Vertexes
             }
         }
 
-        WindVertex Winter
+        SeasonalWindVertex Winter
         {
             get
             {
@@ -53,29 +53,29 @@ namespace Pinpoint.Globe.Vertexes
             }
         }
 
-        public AnualWindVertex(AnualWindVertex swv)
+        public WindVertex(WindVertex swv)
         {
             this.seasons = swv.seasons;
         }
 
-        public AnualWindVertex()
+        public WindVertex()
         {
-            seasons = new WindVertex[2];
+            seasons = new SeasonalWindVertex[2];
 
             for (int i = 0; i < seasons.Length; i++)
             {
-                seasons[i] = new WindVertex();
+                seasons[i] = new SeasonalWindVertex();
             }
         }
     }
 
-    public class WindVertex : ISupersampleable<WindVertex>
+    public class SeasonalWindVertex : IInterpolatable<WindVertex>
     {
 
-        #region ISupersampleable
-        public WindVertex Interpolate(WindVertex opponent, float opponentWeight)
+        #region IInterpolatable
+        public SeasonalWindVertex Interpolate(WindVertex opponent, float opponentWeight)
         {
-            WindVertex wv1 = Scale((1 - opponentWeight) / 2),
+            SeasonalWindVertex wv1 = Scale((1 - opponentWeight) / 2),
             wv2 = opponent.Scale(opponentWeight / 2);
 
             for (int i = 0; i < LAYER_COUNT; i++)
@@ -83,12 +83,12 @@ namespace Pinpoint.Globe.Vertexes
 
             return wv1;
         }
-        public WindVertex Scale(float weight)
+        public SeasonalWindVertex Scale(float weight)
         {
-            WindVertex wv = new WindVertex(this);
+            SeasonalWindVertex wv = new SeasonalWindVertex(this);
 
             for (int i = 0; i < LAYER_COUNT; i++)
-                wv.Layers[i].Scale(weight);
+                wv.Layers[i].CloneScale(weight);
 
             return wv;
         }
@@ -115,17 +115,17 @@ namespace Pinpoint.Globe.Vertexes
         }
 
 
-        public WindVertex(WindLayer[] layers)
+        public SeasonalWindVertex(WindLayer[] layers)
         {
             Layers = layers;
         }
 
-        private WindVertex(WindVertex wv)
+        private SeasonalWindVertex(SeasonalWindVertex swv)
         {
-            this.Layers = wv.Layers;
+            this.Layers = swv.Layers;
         }
 
-        public WindVertex()
+        public SeasonalWindVertex()
         {
             Layers = new WindLayer[LAYER_COUNT];
 
@@ -162,19 +162,24 @@ namespace Pinpoint.Globe.Vertexes
             Add(vertex.Layers);
         }
 
-        public class WindLayer : ISupersampleable<WindLayer>
+        public class WindLayer : IInterpolatable<WindLayer>
         {
-            #region ISupersampleable
+            #region IInterpolatable
             public WindLayer Interpolate(WindLayer opponent, float opponentWeight)
             {
-                WindLayer wl1 = Scale((1 - opponentWeight) / 2),
-                wl2 = opponent.Scale(opponentWeight / 2);
+                WindLayer wl1 = CloneScale((1 - opponentWeight) / 2),
+                wl2 = opponent.CloneScale(opponentWeight / 2);
 
                 wl1.Add(wl2);
 
                 return wl1;
             }
-            public WindLayer Scale(float weight)
+
+            public void Scale(float weight)
+            {
+                Velocity = (byte)(Velocity * weight);
+            }
+            public WindLayer CloneScale(float weight)
             {
                 WindLayer wl = new WindLayer(this);
 

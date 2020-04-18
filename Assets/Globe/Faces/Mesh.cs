@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Pinpoint.Globe.Faces
 {
-    public class Mesh<T> where T : Pinpoint.Globe.ISupersampleable<T>
+    public class Mesh<T> where T : Pinpoint.Globe.IInterpolatable<T>
     {
         T[] Vertexes;
         Vector3 LocalUp;
