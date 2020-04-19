@@ -4,9 +4,48 @@ namespace Pinpoint.Assets.Globe.Vertexes
 {
     public class Point
     {
-        float Latitude;
-        float Longitude;
+        private bool longLatCalculated = false;
+        private float _Latitude;
+        private float _Longitude;
 
+        public float Latitude
+        {
+            get
+            {
+                CalculateLongLat();
+                return _Latitude;
+            }
+            set
+            {
+                _Latitude = value;
+                xyzCalculated = false;
+            }
+        }
+        public float Longitude
+        {
+            get
+            {
+                CalculateLongLat();
+                return _Latitude;
+            }
+            set
+            {
+                _Longitude = value;
+                xyzCalculated = false;
+            }
+        }
+
+        private void CalculateLongLat()
+        {
+            if (!longLatCalculated)
+            {
+                (_Longitude, _Latitude) = GeometricMath.GetLatLong(xFloat, yFloat, zFloat);
+                longLatCalculated = true;
+            }
+        }
+
+
+        private bool xyzCalculated = false;
         //Between 0 and resolution
         private int _x;
         private int _y;
@@ -16,39 +55,58 @@ namespace Pinpoint.Assets.Globe.Vertexes
         {
             get
             {
+                CalculateXYZ();
                 return _x;
             }
             set
             {
                 _x = value;
-                if (value < 0 || value > Globe.Resolution)
-                    Recalculate();
+                ValidateCoordinantValue(value);
             }
         }
         public int y
         {
             get
             {
+                CalculateXYZ();
                 return _y;
             }
             set
             {
                 _y = value;
-                if (value < 0 || value > Globe.Resolution)
-                    Recalculate();
+                ValidateCoordinantValue(value);
             }
         }
         public int z
         {
             get
             {
+                CalculateXYZ();
                 return _z;
             }
             set
             {
                 _z = value;
-                if (value < 0 || value > Globe.Resolution)
-                    Recalculate();
+                ValidateCoordinantValue(value);
+            }
+        }
+
+        private void ValidateCoordinantValue(int value)
+        {
+
+            if (value < 0 || value > Globe.Resolution)
+                Recalculate();
+
+            longLatCalculated = false;
+        }
+
+        private void CalculateXYZ()
+        {
+            if (!xyzCalculated)
+            {
+                (xFloat, yFloat, zFloat) = GeometricMath.GetXYZ(Latitude, Longitude);
+
+                xyzCalculated = true;
             }
         }
 
@@ -56,37 +114,64 @@ namespace Pinpoint.Assets.Globe.Vertexes
         {
             get
             {
-                return GeometricMath.CompressPoint(x);
+                return CompressPoint(x);
             }
             set
             {
-                x = GeometricMath.ExpandPoint(value);
+                x = ExpandPoint(value);
             }
         }
         private float yFloat
         {
             get
             {
-                return GeometricMath.CompressPoint(y);
+                return CompressPoint(y);
             }
             set
             {
-                y = GeometricMath.ExpandPoint(value);
+                y = ExpandPoint(value);
             }
         }
         private float zFloat
         {
             get
             {
-                return GeometricMath.CompressPoint(z);
+                return CompressPoint(z);
             }
             set
             {
-                z = GeometricMath.ExpandPoint(value);
+                z = ExpandPoint(value);
             }
+        }
+        public double compressPointPoint(int x)
+        {
+            return x * 2f / Globe.Resolution - 1;
+        }
+
+        public double ExpandPoint(float x)
+        {
+            return x / 2 + 0.5 * Globe.Resolution;
         }
 
         AtributeGlobe Globe;
+
+        private Point(AttributeGlobe globe)
+        {
+            Globe = globe;
+        }
+
+        public Point(int x, int y, int z, AtributeGlobe globe) : this(globe)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public Point(float latitude, float longitude, AttributeGlobe globe) : this(globe)
+        {
+            this._Latitude = latitude;
+            this._Longitude = longitude;
+        }
 
         private void Recalculate()
         {
@@ -260,15 +345,7 @@ namespace Pinpoint.Assets.Globe.Vertexes
             return Math.Sqrt(x * x + y * y);
         }
 
-        public static CompressPointPoint(int x)
-        {
-            return x * 2f / Resolution - 1;
-        }
 
-        public static ExpandPoint(float x)
-        {
-            return x / 2 + 0.5 * Globe.Resolution;
-        }
 
         static float getLatitude(float x, float y, float z)
         {
@@ -293,6 +370,50 @@ namespace Pinpoint.Assets.Globe.Vertexes
             // s = r * theta
             // theta = s / r
             return arcLength / (double)radius;
+        }
+
+        public static (int, int, int) GetXYZ(float latitude, float longitude)
+        {
+            latitude = (float)(Math.PI * latitude / 180);
+            longitude = (float)(Math.PI * longitude / 180);
+
+            float y = (float)Math.Sin(latitude),
+            x = (float)Math.Cos(longitude) * y,
+            z = (float)Math.Sin(longitude) * y;
+
+            double fx, fy, fz;
+            fx = Math.Abs(x);
+            fy = Math.Abs(y);
+            fz = Math.Abs(z);
+
+            if (fy >= fx && fy >= fz)
+            {
+                // top or bottom face
+                y = (y > 0) ? 1 : -1;
+
+            }
+            else if (fx >= fy && fx >= fz)
+            {
+                //Right or left face
+                x = (x > 0) ? 1 : -1;
+            }
+            else
+            {
+                //Front or back face
+                z = (z > 0) ? 1 : -1;
+            }
+
+            return (x, y, z);
+        }
+
+        public static (float, float) GetLatLong(float x, float y, float z)
+        {
+            float lat = (float)Math.Atan(z / x),
+            lon = (float)Math.Atan(y / EuclidianDistance(x, z));
+
+            return (lat, lon);
+
+
         }
     }
 }
