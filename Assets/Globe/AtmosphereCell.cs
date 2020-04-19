@@ -14,7 +14,7 @@ namespace Pinpoint.Globe
         float Strength = 0.2f;
 
         public AtmosphereCell(int startLat, int endLat, float startHeading, float endHeading, float strength)
-            : this(startLat, endLat, startHeading, startHeading, endHeading)
+            : this(startLat, endLat, startHeading, endHeading)
         {
             Strength = strength;
         }

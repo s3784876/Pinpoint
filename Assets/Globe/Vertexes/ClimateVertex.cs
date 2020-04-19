@@ -9,20 +9,20 @@ namespace Pinpoint.Globe.Vertexes
         #region IInterpolatable
         public ClimateVertex Interpolate(ClimateVertex opponent, float opponentWeight)
         {
-            ClimateVertex cv1 = Scale((1 - opponentWeight) / 2),
-              cv2 = opponent.Scale(opponentWeight / 2);
+            ClimateVertex cv1 = CloneScale((1 - opponentWeight) / 2),
+              cv2 = opponent.CloneScale(opponentWeight / 2);
 
             for (int i = 0; i < seasons.Length; i++)
                 cv1.seasons[i] = (SeasonVertex)cv1.seasons[i].Interpolate(cv2.seasons[i], opponentWeight);
 
             return cv1;
         }
-        public ClimateVertex Scale(float weight)
+        public ClimateVertex CloneScale(float weight)
         {
             ClimateVertex cv = new ClimateVertex(this);
 
             for (int i = 0; i < seasons.Length; i++)
-                seasons[i] = (SeasonVertex)seasons[i].Scale(weight);
+                seasons[i] = (SeasonVertex)seasons[i].CloneScale(weight);
 
             return cv;
         }
@@ -222,8 +222,8 @@ namespace Pinpoint.Globe.Vertexes
             #region IInterpolatable
             public SeasonVertex Interpolate(SeasonVertex opponent, float opponentWeight)
             {
-                SeasonVertex sv1 = Scale((1 - opponentWeight) / 2),
-                  sv2 = opponent.Scale(opponentWeight / 2);
+                SeasonVertex sv1 = CloneScale((1 - opponentWeight) / 2),
+                  sv2 = opponent.CloneScale(opponentWeight / 2);
 
                 sv1._AnualRain += sv2._AnualRain;
                 sv1._Humidity += sv2._Humidity;
@@ -232,7 +232,7 @@ namespace Pinpoint.Globe.Vertexes
 
                 return sv1;
             }
-            public SeasonVertex Scale(float weight)
+            public SeasonVertex CloneScale(float weight)
             {
                 SeasonVertex sv = new SeasonVertex(this);
 

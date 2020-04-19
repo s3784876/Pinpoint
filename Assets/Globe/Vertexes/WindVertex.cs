@@ -8,15 +8,15 @@ namespace Pinpoint.Globe.Vertexes
         #region IInterpolatable
         public WindVertex Interpolate(WindVertex opponent, float opponentWeight)
         {
-            WindVertex wv1 = Scale((1 - opponentWeight) / 2),
-            wv2 = opponent.Scale(opponentWeight / 2);
+            WindVertex wv1 = CloneScale((1 - opponentWeight) / 2),
+            wv2 = opponent.CloneScale(opponentWeight / 2);
 
             for (int i = 0; i < seasons.Length; i++)
                 wv1.seasons[i].Add(wv2.seasons[i]);
 
             return wv1;
         }
-        public WindVertex Scale(float weight)
+        public WindVertex CloneScale(float weight)
         {
             WindVertex wl = new WindVertex(this);
 
@@ -69,21 +69,23 @@ namespace Pinpoint.Globe.Vertexes
         }
     }
 
-    public class SeasonalWindVertex : IInterpolatable<WindVertex>
+    public class SeasonalWindVertex : IInterpolatable<SeasonalWindVertex>
     {
 
         #region IInterpolatable
-        public SeasonalWindVertex Interpolate(WindVertex opponent, float opponentWeight)
+        public SeasonalWindVertex Interpolate(SeasonalWindVertex opponent, float opponentWeight)
         {
+            //Add half of each
             SeasonalWindVertex wv1 = Scale((1 - opponentWeight) / 2),
-            wv2 = opponent.Scale(opponentWeight / 2);
+            wv2 = opponent.CloneScale(opponentWeight / 2);
 
+            //Sum all units to get the average for each layer
             for (int i = 0; i < LAYER_COUNT; i++)
                 wv1.Layers[i].Add(wv2.Layers[i]);
 
             return wv1;
         }
-        public SeasonalWindVertex Scale(float weight)
+        public SeasonalWindVertex CloneScale(float weight)
         {
             SeasonalWindVertex wv = new SeasonalWindVertex(this);
 
@@ -161,6 +163,8 @@ namespace Pinpoint.Globe.Vertexes
         {
             Add(vertex.Layers);
         }
+
+
 
         public class WindLayer : IInterpolatable<WindLayer>
         {

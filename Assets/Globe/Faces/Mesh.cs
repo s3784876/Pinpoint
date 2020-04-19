@@ -1,17 +1,18 @@
 using System;
 using UnityEngine;
+using Pinpoint.Globe.Vertexes;
 
 namespace Pinpoint.Globe.Faces
 {
-    public class Mesh<T> where T : Pinpoint.Globe.IInterpolatable<T>
+    public class Mesh<T> where T : IInterpolatable<T>
     {
         T[] Vertexes;
-        Vector3 LocalUp;
+        private readonly Vector3 LocalUp;
 
-        int Resolution;
+        private readonly int Resolution;
 
         //Constructor
-        protected Mesh(Vector3 localUp, int resolution)
+        public Mesh(Vector3 localUp, int resolution)
         {
             this.Vertexes = new T[resolution * resolution];
             LocalUp = localUp;
@@ -24,11 +25,15 @@ namespace Pinpoint.Globe.Faces
         }
 
         //Returns the pont located at the given co-ordinates
-        protected T GetPoint(float latitude, float longitude)
+        public T GetPoint(float longitude, float latitude)
         {
-            MapPoint(ref latitude, ref longitude);
-            int index = (int)latitude + (int)(longitude * Resolution);
+            MapPoint(ref longitude, ref latitude);
+            return GetPoint((int)longitude, (int)(latitude));
+        }
 
+        public T GetPoint(int x, int y)
+        {
+            int index = x + y * Resolution;
             return GetPoint(index);
         }
 
@@ -70,6 +75,13 @@ namespace Pinpoint.Globe.Faces
         //Formats the latitude and longitude to represent the percentage that the target is along the x and y of the face.
         private void MapPoint(ref float latitude, ref float longitude)
         {
+            if (Direction(ref latitude, ref longitude) != LocalUp)
+                throw new ArgumentOutOfRangeException();
+        }
+
+
+        public static Vector3 Direction(ref float latitude, ref float longitude)
+        {
             latitude = (float)(Math.PI * latitude / 180);
             longitude = (float)(Math.PI * longitude / 180);
 
@@ -88,8 +100,7 @@ namespace Pinpoint.Globe.Faces
                 longitude = x;
                 latitude = z;
 
-                if (LocalUp != Vector3.up && LocalUp != Vector3.down)
-                    throw new IndexOutOfRangeException();
+                return new Vector3(0, (y > 0 ? 1 : -1), 0);
             }
             else if (fx >= fy && fx >= fz)
             {
@@ -97,17 +108,14 @@ namespace Pinpoint.Globe.Faces
                 longitude = z;
                 latitude = y;
 
-                if (LocalUp != Vector3.right && LocalUp != Vector3.left)
-                    throw new IndexOutOfRangeException();
+                return new Vector3((x > 0 ? 1 : -1), 0, 0);
             }
             else
             {
                 //Front or back face
                 longitude = x;
                 latitude = y;
-
-                if (LocalUp != Vector3.forward && LocalUp != Vector3.back)
-                    throw new IndexOutOfRangeException();
+                return new Vector3(0, 0, (z > 0 ? 1 : -1));
             }
         }
     }

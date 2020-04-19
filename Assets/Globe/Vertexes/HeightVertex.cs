@@ -8,8 +8,8 @@ namespace Pinpoint.Globe.Vertexes
         float initialHeight;
         float currentHeight;
 
-        Interpolation<ClimateVertex> climate;
-        Interpolation<WindVertex> wind;
+        Grouping<ClimateVertex> climate;
+        Grouping<WindVertex> wind;
 
         //Stores 4 bits of information relevent to plotting errosion
         /*  Bit 1   Has Vegitation
@@ -118,8 +118,8 @@ namespace Pinpoint.Globe.Vertexes
         public HeightVertex Interpolate(HeightVertex opponent, float opponentWeight)
         {
             //Divide each weight by 2 so that when added they sum to make the average
-            HeightVertex hv1 = Scale((1 - opponentWeight) / 2),
-            hv2 = opponent.Scale(opponentWeight / 2);
+            HeightVertex hv1 = CloneScale((1 - opponentWeight) / 2),
+            hv2 = opponent.CloneScale(opponentWeight / 2);
 
             hv1.initialHeight += hv2.initialHeight;
             hv1.currentHeight += hv2.currentHeight;
@@ -132,7 +132,7 @@ namespace Pinpoint.Globe.Vertexes
 
             return hv1;
         }
-        public HeightVertex Scale(float weight)
+        public HeightVertex CloneScale(float weight)
         {
             HeightVertex hv = new HeightVertex(this);
 
@@ -144,12 +144,12 @@ namespace Pinpoint.Globe.Vertexes
 
         public bool IsChild(WindVertex wv)
         {
-
+            return wind.Equals(wv);
         }
 
         public bool IsChild(ClimateVertex cv)
         {
-
+            return climate.Equals(cv);
         }
     }
 }

@@ -1,38 +1,17 @@
 using System.Diagnostics;
-
+using Pinpoint.Globe.Vertexes;
 using System;
 namespace Pinpoint.Globe
 {
     public class Globe
     {
-        private AttributeGlobe[] AttributeGlobe;
-
-        private readonly AttributeGlobe HeightGlobe
-        {
-            get
-            {
-                return AttributeGlobe[0];
-            }
-        }
-        private readonly AttributeGlobe ClimateGlobe
-        {
-            get
-            {
-                return AttributeGlobe[1];
-            }
-        }
-
-        private readonly AttributeGlobe WindGlobe
-        {
-            get
-            {
-                return AttributeGlobe[2];
-            }
-        }
+        private AttributeGlobe<HeightVertex> HeightGlobe;
+        private AttributeGlobe<ClimateVertex> ClimateGlobe;
+        private AttributeGlobe<WindVertex> WindGlobe;
 
         public Globe()
         {
-            AttributeGlobe = new AttributeGlobe[3];
+            AttributeGlobes = new AttributeGlobe[3];
             uint memoryAvalable = 0;
 
             using (Process proc = Process.GetCurrentProcess())
@@ -53,9 +32,9 @@ namespace Pinpoint.Globe
                 memAllocations[i] = Math.Sqrt(memAllocations[i]);
             }
 
-            AttributeGlobe[0] = new AttributeGlobe<HeightMesh, HeightVertex>((int)memAllocations[0]);
-            AttributeGlobe[1] = new AttributeGlobe<ClimateMesh, ClimateVertex>((int)memAllocations[1]);
-            AttributeGlobe[2] = new AttributeGlobe<WindMesh, WindVertex>((int)memAllocations[2]);
+            AttributeGlobes[0] = new AttributeGlobe<HeightMesh, HeightVertex>((int)memAllocations[0]);
+            AttributeGlobes[1] = new AttributeGlobe<ClimateMesh, ClimateVertex>((int)memAllocations[1]);
+            AttributeGlobes[2] = new AttributeGlobe<WindMesh, WindVertex>((int)memAllocations[2]);
         }
 
         public void SimulateGlobes()
