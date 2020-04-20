@@ -33,12 +33,26 @@ namespace Pinpoint.Globe
 
         private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
         {
-            WindVertex head;
+            Point p;
 
-            for (int i = 0; i < Faces[0].Resolution; i++)
+            const int startLong = 0;
+
+            p = new Point(currentLocal.startLat, startLong);
+
+
+            //Step around the great circle and simulate at every avalable point
+            do
             {
-                head = GetGlobalPoint(currentLocal.StartLat, i);
-            }
+                SimulatePath(p);
+                p.StepX();
+            } while (p.Longitude != startLong);
+        }
+
+        private void SimulatePath(Point p, AtmosphereCell currentLocal)
+        {
+            WindVertex wv = FindPoint(p);
+
+            throw new System.NotImplementedException();
         }
     }
 }
