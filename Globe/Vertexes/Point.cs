@@ -1,8 +1,8 @@
 using System;
-using Pinpoint.Globe.GeometricMath;
 using Pinpoint.Globe;
+using Pinpoint.Globe.GeometricMath;
 
-namespace Pinpoint.Assets.Globe.Vertexes
+namespace Pinpoint.Globe.Vertexes
 {
     public class Point
     {

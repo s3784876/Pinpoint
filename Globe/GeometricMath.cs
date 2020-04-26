@@ -1,4 +1,4 @@
-namespace Pinpoint.Assets.Globe
+namespace Pinpoint.Globe
 {
     public class GeometricMath
     {
