@@ -168,7 +168,7 @@ namespace Pinpoint.Globe
 
         protected T GetPoint(Point p)
         {
-            return GetPoint(p.X, p.Y, p.z);
+            return GetPoint(p.X, p.Y, p.Z);
         }
 
         //Called to perform all the calculations to get the mesh to a completed state

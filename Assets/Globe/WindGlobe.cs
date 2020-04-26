@@ -1,4 +1,5 @@
 using Pinpoint.Globe.Vertexes;
+using System;
 
 namespace Pinpoint.Globe
 {
@@ -29,29 +30,58 @@ namespace Pinpoint.Globe
                 //Simulate each cell
                 foreach (var cell in Cells)
                     SimulateCell(cell, season == 0);
+
+            Console.WriteLine("All cells completed");
         }
 
         private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
         {
             Point p;
 
+            p = new Point(currentLocal.startLat, startLong, this);
+
+            WindVertex wv;
+            SeasonalWindVertex sv;
+            WindLayer wl;
+
+            float heading;
+            const byte magnitude = 1;
+
             const int startLong = 0;
-
-            p = new Point(currentLocal.startLat, startLong);
-
+            bool goingUp = currentLocal.StartLat < currentLocal.EndLat;
 
             //Step around the great circle and simulate at every avalable point
             do
             {
-                SimulatePath(p);
-                p.StepX();
-            } while (p.Longitude != startLong);
+                heading = currentLocal.GetHeading(p.Latitude, isSummer);
+                wl = new WindLayer(magnitude, heading);
+
+                do
+                {
+                    wv = GetPoint(p);
+
+                    if (summer)
+                        sv = wv.Summer;
+                    else
+                        sv = wv.winter;
+
+                    sv = new SeasonalWindVertex(wl);
+
+                    p.StepX();
+                } while (p.Longitude != startLong);
+
+                //Step towards the pole
+                if (goingUp)
+                    p.StepY();
+                else
+                    p.StepY(-1);
+            } while (math.abs(p.Latitude) != currentLocal.EndLat);
+
+            Console.WriteLine($"Finished {(isSummer ? "Summer" : "Winter")} \t in the {currentLocal.StartLat},{currentLocal.EndLat} cell");
         }
 
         private void SimulatePath(Point p, AtmosphereCell currentLocal)
         {
-            WindVertex wv = FindPoint(p);
-
             throw new System.NotImplementedException();
         }
     }

@@ -1,0 +1,4 @@
+C:\Users\Luke Magnusson\Documents\Coding\Pinpoint\Pinpoint\obj\Debug\netcoreapp3.1\Pinpoint.csprojAssemblyReference.cache
+C:\Users\Luke Magnusson\Documents\Coding\Pinpoint\Pinpoint\obj\Debug\netcoreapp3.1\Pinpoint.csproj.CoreCompileInputs.cache
+C:\Users\Luke Magnusson\Documents\Coding\Pinpoint\Pinpoint\obj\Debug\netcoreapp3.1\Pinpoint.AssemblyInfoInputs.cache
+C:\Users\Luke Magnusson\Documents\Coding\Pinpoint\Pinpoint\obj\Debug\netcoreapp3.1\Pinpoint.AssemblyInfo.cs

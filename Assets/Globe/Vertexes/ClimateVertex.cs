@@ -60,6 +60,7 @@ namespace Pinpoint.Globe.Vertexes
         public enum Climate
         {
             Mountain,
+            Ocean,
             Tropical_Rainforrest,
             Tropical_Monsoon,
             Tropical_Savannah,
@@ -77,6 +78,28 @@ namespace Pinpoint.Globe.Vertexes
             UNKNOWN
 
         };
+
+        public const string[] ClimateNames = {
+            "Mountain",
+            "Ocean",
+            "Tropical Rainforrest",
+            "Tropical Monsoon",
+            "Tropical Savannah",
+            "Hot Desert",
+            "Hot Steppe",
+            "Continental Humid",
+            "Continental Subarctic",
+            "Subtropical Mediterranean",
+            "Subtropical Humid",
+            "Subtropical Oceanic",
+            "Cold Desert",
+            "Cold Steppe",
+            "Polar Tundra",
+            "Polar Ice Caps",
+            "UNKNOWN"
+
+        };
+
         public Climate Classification(float averageElevation, int longitude)
         {
             longitude = Math.Abs(longitude);
@@ -102,13 +125,17 @@ namespace Pinpoint.Globe.Vertexes
 
         private Climate TropicalCell()
         {
-            float threshold = 100 - (summer.AnualRain / 25.0f);
+            float averageRain = (summer.AnualRain + winter.AnualRain) / 2;
+            float threshold = 100 - (averageRain / 25.0f);
 
             //Tropical Climates
-            if (summer.AnualRain > 720)
+            if (averageRain > 720)
             {
                 return Climate.Tropical_Rainforrest;
             }
+            //Desert has been moved up here to catch some edge cases that savannah would eclipse
+            else if (IsDesert())
+                return Climate.Hot_Desert;
             else if (winter.AnualRain / 12 < 60)
             {
                 if (winter.AnualRain / 12 >= threshold)
@@ -116,36 +143,25 @@ namespace Pinpoint.Globe.Vertexes
                 else
                     return Climate.Tropical_Savannah;
             }
-            //Hot climates
+            //Use Steppe for blending
             else
-            {
-                int precipitationScore = (summer.Tempreture + winter.Tempreture) * 10;
-                float totalRain = (summer.AnualRain + winter.AnualRain) / 2;
-
-                if (summer.AnualRain >= 0.7 * totalRain)
-                    precipitationScore += 280;
-                else if (summer.AnualRain >= 0.3 * totalRain)
-                    precipitationScore += 140;
-
-                if (IsDesert())
-                    return Climate.Hot_Desert;
-                else
-                    return Climate.Hot_Steppe;
-            }
+                return Climate.Hot_Steppe;
         }
 
-        private Climate MidLatitudeCell(int longitude)
+        private Climate MidLatitudeCell(int latitude)
         {
-            float seasonalRainVariation = summer.AnualRain / winter.AnualRain - 1;
+            float seasonalRainVariation = winter.AnualRain == 0 ?
+                                            float.PositiveInfinity :
+                                            (summer.AnualRain / winter.AnualRain - 1);
             seasonalRainVariation *= seasonalRainVariation;
 
-            if (longitude > 60 || (longitude >= 45 && winter.Tempreture < 0))
+            if (latitude > 60 || (latitude >= 45 && winter.Tempreture < 0))
                 return Climate.Continental_Subarctic;
 
-            else if (longitude < 45 && winter.Tempreture > 0 && summer.AnualRain / 12 >= 30)
+            else if (latitude < 45 && winter.Tempreture > 0 && summer.AnualRain / 12 >= 30)
                 return Climate.Subtropical_Mediterranean;
 
-            else if (summer.Tempreture > 22 && winter.Tempreture > 0)
+            else if (winter.Tempreture > 0 && summer.Tempreture > 22)
                 return Climate.Subtropical_Humid;
 
             else if (winter.Tempreture > 0 && summer.Tempreture > 10 && seasonalRainVariation < 0.5)
@@ -154,7 +170,7 @@ namespace Pinpoint.Globe.Vertexes
             else if (IsDesert())
                 return Climate.Cold_Desert;
 
-            else if (longitude < 50 && IsSteppe())
+            else if (latitude < 50 && IsSteppe())
                 return Climate.Cold_Steppe;
 
             else
@@ -213,6 +229,12 @@ namespace Pinpoint.Globe.Vertexes
         private ClimateVertex(ClimateVertex cv)
         {
             this.seasons = cv.seasons;
+        }
+
+        public ClimateVertex(float summerRain, sbyte summerTempreture, float winterRain, sbyte winterTempreture)
+        {
+            summer = new SeasonVertex(1, summerRain, 1, summerTempreture);
+            winter = new SeasonVertex(1, winterRain, 1, winterTempreture);
         }
 
         #endregion
@@ -314,10 +336,10 @@ namespace Pinpoint.Globe.Vertexes
                 Tempreture = sv.Tempreture;
             }
 
-            public SeasonVertex(float soilHardness, float anualRain, float humidity, sbyte tempreture)
+            public SeasonVertex(float soilHardness, float rain, float humidity, sbyte tempreture)
             {
                 SoilHardness = soilHardness;
-                AnualRain = anualRain;
+                AnualRain = rain;
                 Humidity = humidity;
                 Tempreture = tempreture;
             }

@@ -122,20 +122,23 @@ namespace Pinpoint.Globe.Vertexes
             Layers = layers;
         }
 
-        private SeasonalWindVertex(SeasonalWindVertex swv)
-        {
-            this.Layers = swv.Layers;
-        }
-
-        public SeasonalWindVertex()
+        public SeasonalWindVertex(WindLayer layer)
         {
             Layers = new WindLayer[LAYER_COUNT];
 
             for (int i = 0; i < LAYER_COUNT; i++)
             {
-                Layers[i] = new WindLayer();
+                Layers[i] = new WindLayer(layer);
             }
         }
+
+        private SeasonalWindVertex(SeasonalWindVertex swv)
+        {
+            this.Layers = swv.Layers;
+        }
+
+        public SeasonalWindVertex() : this(new WindLayer())
+        { }
 
         public int getGroundSpeed(float averageElevation)
         {
@@ -214,6 +217,12 @@ namespace Pinpoint.Globe.Vertexes
             {
                 Velocity = velocity;
                 Direction = direction;
+            }
+
+            public WindLayer(byte xVelocity, byte yVelocity)
+            {
+                Velocity = GeometricMath.GetEuclidianDistance(xVelocity, yVelocity);
+                Direction = (float)Math.Tanh(yVelocity / xVelocity);
             }
 
             public WindLayer(WindLayer wl)

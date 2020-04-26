@@ -49,6 +49,7 @@
      <Compile Include="Assets\Globe\AttributeGlobe.cs" />
      <Compile Include="Assets\Globe\ClimateGlobe.cs" />
      <Compile Include="Assets\Globe\Faces\Mesh.cs" />
+     <Compile Include="Assets\Globe\GeometricMath.cs" />
      <Compile Include="Assets\Globe\Globe.cs" />
      <Compile Include="Assets\Globe\HeightGlobe.cs" />
      <Compile Include="Assets\Globe\Vertexes\ClimateVertex.cs" />

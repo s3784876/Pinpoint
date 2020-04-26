@@ -28,7 +28,7 @@ namespace Pinpoint.Globe
             Gradient = (endHeading - startHeading) / (endLat - startLat);
         }
 
-        public float GetHeading(float lat)
+        private float GetHeading(float lat)
         {
             //Ensure that the point is in the range.
             if (lat > EndLat || lat < StartLat)
@@ -44,6 +44,11 @@ namespace Pinpoint.Globe
                 return GetHeading(lat - 30);
             else
                 return GetHeading(lat + 30);
+        }
+
+        public float GetProjectedHeading(float lat, float startingLong, bool isSummer)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

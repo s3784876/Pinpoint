@@ -9,7 +9,9 @@ namespace Pinpoint.Globe
 
         public override void Simulate()
         {
-            throw new System.NotImplementedException();
+            //TODO implement
+
+            //throw new System.NotImplementedException();
         }
     }
 }

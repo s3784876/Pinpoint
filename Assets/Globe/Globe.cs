@@ -32,9 +32,9 @@ namespace Pinpoint.Globe
                 memAllocations[i] = Math.Sqrt(memAllocations[i]);
             }
 
-            AttributeGlobes[0] = new AttributeGlobe<HeightMesh, HeightVertex>((int)memAllocations[0]);
-            AttributeGlobes[1] = new AttributeGlobe<ClimateMesh, ClimateVertex>((int)memAllocations[1]);
-            AttributeGlobes[2] = new AttributeGlobe<WindMesh, WindVertex>((int)memAllocations[2]);
+            HeightGlobe = new HeightGlobe((int)memAllocations[0]);
+            ClimateGlobe = new ClimateGlobe((int)memAllocations[1]);
+            WindGlobe = new WindGlobe((int)memAllocations[2]);
         }
 
         public void SimulateGlobes()

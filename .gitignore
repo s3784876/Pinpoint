@@ -1,2 +1,2 @@
-*.csproj
+**.csproj
 Library/**

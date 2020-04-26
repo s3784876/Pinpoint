@@ -1,5 +1,6 @@
 using System;
 using Pinpoint.Globe.GeometricMath;
+using Pinpoint.Globe;
 
 namespace Pinpoint.Assets.Globe.Vertexes
 {
@@ -161,7 +162,7 @@ namespace Pinpoint.Assets.Globe.Vertexes
             Globe = globe;
         }
 
-        public Point(int x, int y, int z, AtributeGlobe globe) : this(globe)
+        public Point(int x, int y, int z, AttributeGlobe globe) : this(globe)
         {
             this.x = x;
             this.y = y;
