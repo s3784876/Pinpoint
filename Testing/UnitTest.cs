@@ -209,6 +209,7 @@ namespace Pinpoint.Testing
 
                 if (ClimateVertex.ClimateNames[(int)c] != expectedResults[i])
                 {
+                    Console.WriteLine("Unexpected result in climate clasification");
                     throw new System.Exception();
                 }
             }
