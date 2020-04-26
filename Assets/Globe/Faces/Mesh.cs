@@ -7,7 +7,7 @@ namespace Pinpoint.Globe.Faces
     public class Mesh<T> where T : IInterpolatable<T>
     {
         T[] Vertexes;
-        private readonly Vector3 LocalUp;
+        public readonly Vector3 LocalUp;
 
         private readonly int Resolution;
 
@@ -17,11 +17,6 @@ namespace Pinpoint.Globe.Faces
             this.Vertexes = new T[resolution * resolution];
             LocalUp = localUp;
             Resolution = resolution;
-
-            for (int i = 0; i < Vertexes.Length; i++)
-            {
-                Vertexes[i] = new T();
-            }
         }
 
         //Returns the pont located at the given co-ordinates
@@ -44,7 +39,7 @@ namespace Pinpoint.Globe.Faces
         }
 
         //Returns the aproximation of the conditions at the given lat and long by returning a weighted average of the points in the region
-        protected T GetInterpolatedPoint(float latitude, float longitude)
+        public T GetInterpolatedPoint(float latitude, float longitude)
         {
             MapPoint(ref latitude, ref longitude);
 

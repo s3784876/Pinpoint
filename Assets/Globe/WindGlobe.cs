@@ -36,9 +36,13 @@ namespace Pinpoint.Globe
 
         private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
         {
-            Point p;
+            Point<WindVertex> p;
 
-            p = new Point(currentLocal.startLat, startLong, this);
+            const int startLong = 0;
+            bool goingUp = currentLocal.StartLat < currentLocal.EndLat;
+
+
+            p = new Point<WindVertex>(currentLocal.StartLat, startLong, this);
 
             WindVertex wv;
             SeasonalWindVertex sv;
@@ -46,9 +50,6 @@ namespace Pinpoint.Globe
 
             float heading;
             const byte magnitude = 1;
-
-            const int startLong = 0;
-            bool goingUp = currentLocal.StartLat < currentLocal.EndLat;
 
             //Step around the great circle and simulate at every avalable point
             do
@@ -60,10 +61,10 @@ namespace Pinpoint.Globe
                 {
                     wv = GetPoint(p);
 
-                    if (summer)
+                    if (isSummer)
                         sv = wv.Summer;
                     else
-                        sv = wv.winter;
+                        sv = wv.Winter;
 
                     sv = new SeasonalWindVertex(wl);
 
@@ -75,12 +76,12 @@ namespace Pinpoint.Globe
                     p.StepY();
                 else
                     p.StepY(-1);
-            } while (math.abs(p.Latitude) != currentLocal.EndLat);
+            } while (Math.Abs(p.Latitude) <= Math.Abs(currentLocal.EndLat));
 
             Console.WriteLine($"Finished {(isSummer ? "Summer" : "Winter")} \t in the {currentLocal.StartLat},{currentLocal.EndLat} cell");
         }
 
-        private void SimulatePath(Point p, AtmosphereCell currentLocal)
+        private void SimulatePath(Point<WindVertex> p, AtmosphereCell currentLocal)
         {
             throw new System.NotImplementedException();
         }

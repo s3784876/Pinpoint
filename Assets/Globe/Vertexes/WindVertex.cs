@@ -11,8 +11,8 @@ namespace Pinpoint.Globe.Vertexes
             WindVertex wv1 = CloneScale((1 - opponentWeight) / 2),
             wv2 = opponent.CloneScale(opponentWeight / 2);
 
-            for (int i = 0; i < seasons.Length; i++)
-                wv1.seasons[i].Add(wv2.seasons[i]);
+            for (int i = 0; i < Seasons.Length; i++)
+                wv1.Seasons[i].Add(wv2.Seasons[i]);
 
             return wv1;
         }
@@ -20,51 +20,51 @@ namespace Pinpoint.Globe.Vertexes
         {
             WindVertex wl = new WindVertex(this);
 
-            for (int i = 0; i < seasons.Length; i++)
-                wl.seasons[i].Scale(weight);
+            for (int i = 0; i < Seasons.Length; i++)
+                wl.Seasons[i].CloneScale(weight);
 
             return wl;
         }
         #endregion
 
-        SeasonalWindVertex[] seasons;
+        public SeasonalWindVertex[] Seasons { get; protected set; }
 
-        SeasonalWindVertex Summer
+        public SeasonalWindVertex Summer
         {
             get
             {
-                return seasons[0];
+                return Seasons[0];
             }
-            set
+            private set
             {
-                seasons[0] = value;
+                Seasons[0] = value;
             }
         }
 
-        SeasonalWindVertex Winter
+        public SeasonalWindVertex Winter
         {
             get
             {
-                return seasons[1];
+                return Seasons[1];
             }
-            set
+            private set
             {
-                seasons[1] = value;
+                Seasons[1] = value;
             }
         }
 
         public WindVertex(WindVertex swv)
         {
-            this.seasons = swv.seasons;
+            this.Seasons = swv.Seasons;
         }
 
         public WindVertex()
         {
-            seasons = new SeasonalWindVertex[2];
+            Seasons = new SeasonalWindVertex[2];
 
-            for (int i = 0; i < seasons.Length; i++)
+            for (int i = 0; i < Seasons.Length; i++)
             {
-                seasons[i] = new SeasonalWindVertex();
+                Seasons[i] = new SeasonalWindVertex();
             }
         }
     }
@@ -76,7 +76,7 @@ namespace Pinpoint.Globe.Vertexes
         public SeasonalWindVertex Interpolate(SeasonalWindVertex opponent, float opponentWeight)
         {
             //Add half of each
-            SeasonalWindVertex wv1 = Scale((1 - opponentWeight) / 2),
+            SeasonalWindVertex wv1 = CloneScale((1 - opponentWeight) / 2),
             wv2 = opponent.CloneScale(opponentWeight / 2);
 
             //Sum all units to get the average for each layer
@@ -162,101 +162,99 @@ namespace Pinpoint.Globe.Vertexes
                 Layers[i].Add(layers[i]);
             }
         }
-        public void Add(WindVertex vertex)
+
+        public void Add(SeasonalWindVertex sv)
         {
-            Add(vertex.Layers);
+            Add(sv.Layers);
+        }
+    }
+    public class WindLayer : IInterpolatable<WindLayer>
+    {
+        #region IInterpolatable
+        public WindLayer Interpolate(WindLayer opponent, float opponentWeight)
+        {
+            WindLayer wl1 = CloneScale((1 - opponentWeight) / 2),
+            wl2 = opponent.CloneScale(opponentWeight / 2);
+
+            wl1.Add(wl2);
+
+            return wl1;
+        }
+
+        public void Scale(float weight)
+        {
+            Velocity = (byte)(Velocity * weight);
+        }
+        public WindLayer CloneScale(float weight)
+        {
+            WindLayer wl = new WindLayer(this);
+
+            wl.Velocity = (byte)(wl.Velocity * weight);
+
+            return wl;
+        }
+        #endregion
+
+        byte Velocity;
+        byte _Direction;
+
+        //Returns the direction the layer is heading, in radians, relitive to north
+        float Direction
+        {
+            get
+            {
+                return (float)(_Direction / (float)byte.MaxValue * 2 * Math.PI);
+            }
+            set
+            {
+                _Direction = (byte)((value % 2 * Math.PI) / (2 * Math.PI)
+                    * byte.MaxValue);
+            }
+        }
+
+        public WindLayer(byte velocity, float direction)
+        {
+            Velocity = velocity;
+            Direction = direction;
+        }
+
+        public WindLayer(byte xVelocity, byte yVelocity)
+        {
+            Velocity = (byte)Math.Round(GeometricMath.EuclidianDistance(xVelocity, yVelocity), MidpointRounding.AwayFromZero);
+            Direction = (float)Math.Tanh(yVelocity / xVelocity);
+        }
+
+        public WindLayer(WindLayer wl)
+        {
+            Velocity = wl.Velocity;
+            _Direction = wl._Direction;
+        }
+
+        public WindLayer()
+        {
+            Velocity = 0;
+            Direction = 0;
+        }
+
+        public short GetXVelocity()
+        {
+            return (short)(Math.Sin(Direction) * Velocity);
+        }
+
+        public short GetYVelocity()
+        {
+            return (short)(Math.Cos(Direction) * Velocity);
+        }
+
+        public void Add(WindLayer w)
+        {
+            int xVel = GetXVelocity() + w.GetXVelocity(),
+                yVel = GetYVelocity() + w.GetYVelocity();
+
+            Direction = (float)Math.Atan(xVel / yVel);
+            Velocity = (byte)Math.Min(Math.Sqrt(xVel * xVel + yVel * yVel), byte.MaxValue);
         }
 
 
-
-        public class WindLayer : IInterpolatable<WindLayer>
-        {
-            #region IInterpolatable
-            public WindLayer Interpolate(WindLayer opponent, float opponentWeight)
-            {
-                WindLayer wl1 = CloneScale((1 - opponentWeight) / 2),
-                wl2 = opponent.CloneScale(opponentWeight / 2);
-
-                wl1.Add(wl2);
-
-                return wl1;
-            }
-
-            public void Scale(float weight)
-            {
-                Velocity = (byte)(Velocity * weight);
-            }
-            public WindLayer CloneScale(float weight)
-            {
-                WindLayer wl = new WindLayer(this);
-
-                wl.Velocity = (byte)(wl.Velocity * weight);
-
-                return wl;
-            }
-            #endregion
-
-            byte Velocity;
-            byte _Direction;
-
-            //Returns the direction the layer is heading, in radians, relitive to north
-            float Direction
-            {
-                get
-                {
-                    return (float)(_Direction / (float)byte.MaxValue * 2 * Math.PI);
-                }
-                set
-                {
-                    _Direction = (byte)((value % 2 * Math.PI) / (2 * Math.PI)
-                        * byte.MaxValue);
-                }
-            }
-
-            public WindLayer(byte velocity, float direction)
-            {
-                Velocity = velocity;
-                Direction = direction;
-            }
-
-            public WindLayer(byte xVelocity, byte yVelocity)
-            {
-                Velocity = GeometricMath.GetEuclidianDistance(xVelocity, yVelocity);
-                Direction = (float)Math.Tanh(yVelocity / xVelocity);
-            }
-
-            public WindLayer(WindLayer wl)
-            {
-                Velocity = wl.Velocity;
-                _Direction = wl._Direction;
-            }
-
-            public WindLayer()
-            {
-                Velocity = 0;
-                Direction = 0;
-            }
-
-            public short GetXVelocity()
-            {
-                return (short)(Math.Sin(Direction) * Velocity);
-            }
-
-            public short GetYVelocity()
-            {
-                return (short)(Math.Cos(Direction) * Velocity);
-            }
-
-            public void Add(WindLayer w)
-            {
-                int xVel = GetXVelocity() + w.GetXVelocity(),
-                    yVel = GetYVelocity() + w.GetYVelocity();
-
-                Direction = (float)Math.Atan(xVel / yVel);
-                Velocity = (byte)Math.Min(Math.Sqrt(xVel * xVel + yVel * yVel), byte.MaxValue);
-            }
-
-
-        }
     }
 }

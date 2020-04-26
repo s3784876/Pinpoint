@@ -79,7 +79,7 @@ namespace Pinpoint.Globe.Vertexes
 
         };
 
-        public const string[] ClimateNames = {
+        public readonly string[] ClimateNames = {
             "Mountain",
             "Ocean",
             "Tropical Rainforrest",
@@ -97,7 +97,6 @@ namespace Pinpoint.Globe.Vertexes
             "Polar Tundra",
             "Polar Ice Caps",
             "UNKNOWN"
-
         };
 
         public Climate Classification(float averageElevation, int longitude)
@@ -106,19 +105,19 @@ namespace Pinpoint.Globe.Vertexes
 
 
             //Ignore high altitude areas.
-            if (averageElevation > WindVertex.LAYER_SIZE)
-            {
+            if (averageElevation < 0)
+                return Climate.Ocean;
+
+            else if (averageElevation > SeasonalWindVertex.LAYER_SIZE)
                 return Climate.Mountain;
-            }
+
             else if (longitude <= 30)
-            {
                 return TropicalCell();
-            }
+
             //Continental and subtropical climates
             else if (longitude <= 75)
-            {
                 return MidLatitudeCell(longitude);
-            }
+
             else
                 return PolarCell();
         }

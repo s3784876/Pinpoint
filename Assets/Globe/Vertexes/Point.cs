@@ -1,10 +1,11 @@
 using System;
 using Pinpoint.Globe;
-using Pinpoint.Globe.GeometricMath;
+using static Pinpoint.Globe.GeometricMath;
+using UnityEngine;
 
 namespace Pinpoint.Globe.Vertexes
 {
-    public class Point
+    public class Point<T> where T : IInterpolatable<T>
     {
         private bool longLatCalculated = false;
         private float _Latitude;
@@ -145,31 +146,34 @@ namespace Pinpoint.Globe.Vertexes
                 z = ExpandPoint(value);
             }
         }
-        public double compressPointPoint(int x)
+
+        //Normalizes an integer in [0,Resolution) to [-1,1]
+        public float CompressPoint(int x)
         {
-            return x * 2f / Globe.Resolution - 1;
+            return x * 2 / (float)Globe.Resolution - 1;
         }
 
-        public double ExpandPoint(float x)
+        //De-normilizes a point form [-1,1] to [0,resolution) 
+        public int ExpandPoint(float x)
         {
-            return x / 2 + 0.5 * Globe.Resolution;
+            return (int)Math.Round(x / 2 + 0.5 * Globe.Resolution, MidpointRounding.AwayFromZero);
         }
 
-        AtributeGlobe Globe;
+        AttributeGlobe<T> Globe;
 
-        private Point(AttributeGlobe globe)
+        public Point(AttributeGlobe<T> globe)
         {
-            Globe = globe;
+            this.Globe = globe;
         }
 
-        public Point(int x, int y, int z, AttributeGlobe globe) : this(globe)
+        public Point(int x, int y, int z, AttributeGlobe<T> globe) : this(globe)
         {
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
-        public Point(float latitude, float longitude, AttributeGlobe globe) : this(globe)
+        public Point(float latitude, float longitude, AttributeGlobe<T> globe) : this(globe)
         {
             this._Latitude = latitude;
             this._Longitude = longitude;
@@ -232,24 +236,24 @@ namespace Pinpoint.Globe.Vertexes
             if (IsEdge(x))
             {
                 if (x == 0)
-                    return Vector3.Left;
+                    return Vector3.left;
                 else
-                    return Vector3.Right;
+                    return Vector3.right;
 
             }
             else if (IsEdge(y))
             {
                 if (y == 0)
-                    return Vector3.Down;
+                    return Vector3.down;
                 else
-                    return Vector3.Up;
+                    return Vector3.up;
             }
             else if (IsEdge(z))
             {
                 if (z == 0)
-                    return Vector3.Back;
+                    return Vector3.back;
                 else
-                    return Vector3.Forward;
+                    return Vector3.forward;
             }
             else
                 throw new System.Exception();
@@ -270,7 +274,7 @@ namespace Pinpoint.Globe.Vertexes
             else
             {
                 //Is top or bottom face
-                double r = GeometricMath.EuclidianDistance(floatX, floatZ);
+                double r = GeometricMath.EuclidianDistance(xFloat, zFloat);
 
                 //Get the base angle from the pole to the point
                 double theta = Math.Atan(zFloat / xFloat);
@@ -327,7 +331,7 @@ namespace Pinpoint.Globe.Vertexes
             {
 
                 //Is top or bottom face
-                double scale = yOffset / Math.Sqrt(xFloat * xFloat + zFloat * zFloat);
+                double scale = 1 / Math.Sqrt(xFloat * xFloat + zFloat * zFloat);
 
                 if (scale > 1)
                 {
@@ -341,6 +345,11 @@ namespace Pinpoint.Globe.Vertexes
                 }
             }
 
+        }
+
+        public T GetPoint()
+        {
+            return Globe.GetPoint(this);
         }
     }
 }

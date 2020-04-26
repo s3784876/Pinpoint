@@ -1,3 +1,5 @@
+using System;
+
 namespace Pinpoint.Globe
 {
     public class GeometricMath
@@ -7,7 +9,10 @@ namespace Pinpoint.Globe
             return Math.Sqrt(x * x + y * y);
         }
 
-
+        public static double EuclidianDistance(float x, float y)
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
 
         static float getLatitude(float x, float y, float z)
         {
@@ -27,11 +32,11 @@ namespace Pinpoint.Globe
             return radius * theta;
         }
 
-        public static double GetTheta(float radius, float arcLength)
+        public static double GetTheta(double radius, float arcLength)
         {
             // s = r * theta
             // theta = s / r
-            return arcLength / (double)radius;
+            return arcLength / radius;
         }
 
         public static (int, int, int) GetXYZ(float latitude, float longitude)
@@ -64,8 +69,12 @@ namespace Pinpoint.Globe
                 //Front or back face
                 z = (z > 0) ? 1 : -1;
             }
+            MidpointRounding m = MidpointRounding.AwayFromZero;
 
-            return (x, y, z);
+            int ix = (int)Math.Round(x, m), iy = (int)Math.Round(y, m), iz = (int)Math.Round(z, m);
+
+
+            return (ix, iy, iz);
         }
 
         public static (float, float) GetLatLong(float x, float y, float z)

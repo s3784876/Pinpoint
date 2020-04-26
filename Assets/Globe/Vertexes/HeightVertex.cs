@@ -5,11 +5,11 @@ namespace Pinpoint.Globe.Vertexes
 {
     public class HeightVertex : IInterpolatable<HeightVertex>
     {
-        float initialHeight;
-        float currentHeight;
+        float InitialHeight;
+        float CurrentHeight;
 
-        Grouping<ClimateVertex> climate;
-        Grouping<WindVertex> wind;
+        Grouping<ClimateVertex> Climate;
+        Grouping<WindVertex> Wind;
 
         //Stores 4 bits of information relevent to plotting errosion
         /*  Bit 1   Has Vegitation
@@ -93,27 +93,30 @@ namespace Pinpoint.Globe.Vertexes
             }
         }
 
-        public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, WindVertex wind, bool isRiver, bool hasVegitation, bool IsOcean)
+        private HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean)
         {
-            this.initialHeight = initialHeight;
-            this.currentHeight = currentHeight;
-            this.climate = climate;
-            this.wind = wind;
+            this.InitialHeight = initialHeight;
+            this.CurrentHeight = currentHeight;
             this.IsRiver = isRiver;
             this.HasVegitation = hasVegitation;
             this.IsOcean = IsOcean;
         }
 
-        public HeightVertex(HeightVertex hv)
+        public HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean, ClimateVertex climate, WindVertex wind) : this(initialHeight, currentHeight, isRiver, hasVegitation, IsOcean)
         {
-            this.initialHeight = hv.initialHeight;
-            this.currentHeight = hv.currentHeight;
-            this.climate = hv.climate;
-            this.wind = hv.wind;
-            this.IsRiver = hv.IsRiver;
-            this.HasVegitation = hv.HasVegitation;
-            this.IsOcean = hv.IsOcean;
+            //Use the points as the only member in the grouping
+            this.Climate = new Grouping<ClimateVertex>(climate);
+            this.Wind = new Grouping<WindVertex>(wind);
         }
+
+        public HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean, Grouping<ClimateVertex> climate, Grouping<WindVertex> wind) : this(initialHeight, currentHeight, isRiver, hasVegitation, IsOcean)
+        {
+            this.Climate = climate;
+            this.Wind = wind;
+        }
+
+        public HeightVertex(HeightVertex hv) : this(hv.InitialHeight, hv.CurrentHeight, hv.IsRiver, hv.HasVegitation, hv.IsOcean, hv.Climate, hv.Wind)
+        { }
 
         public HeightVertex Interpolate(HeightVertex opponent, float opponentWeight)
         {
@@ -121,8 +124,8 @@ namespace Pinpoint.Globe.Vertexes
             HeightVertex hv1 = CloneScale((1 - opponentWeight) / 2),
             hv2 = opponent.CloneScale(opponentWeight / 2);
 
-            hv1.initialHeight += hv2.initialHeight;
-            hv1.currentHeight += hv2.currentHeight;
+            hv1.InitialHeight += hv2.InitialHeight;
+            hv1.CurrentHeight += hv2.CurrentHeight;
 
             if (opponentWeight > 0.5)
             {
@@ -136,20 +139,20 @@ namespace Pinpoint.Globe.Vertexes
         {
             HeightVertex hv = new HeightVertex(this);
 
-            hv.currentHeight *= weight;
-            hv.initialHeight *= weight;
+            hv.CurrentHeight *= weight;
+            hv.InitialHeight *= weight;
 
             return hv;
         }
 
         public bool IsChild(WindVertex wv)
         {
-            return wind.Equals(wv);
+            return Wind.Equals(wv);
         }
 
         public bool IsChild(ClimateVertex cv)
         {
-            return climate.Equals(cv);
+            return Climate.Equals(cv);
         }
     }
 }

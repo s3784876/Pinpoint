@@ -7,14 +7,26 @@ namespace Pinpoint.Globe.Vertexes
         private T[] Parents;
         Vector2 Weights;
 
-        public Grouping(T[] parents, Vector2 location)
+        public Grouping(T[] parents, Vector2 index)
         {
             this.Parents = parents;
 
 
-            location.x %= 1;
-            location.y %= 1;
-            this.Weights = location;
+            index.x %= 1;
+            index.y %= 1;
+            this.Weights = index;
+        }
+
+        public Grouping(T parent)
+        {
+            Parents = new T[4];
+
+            for (int i = 0; i < Parents.Length; i++)
+            {
+                Parents[i] = parent;
+            }
+
+            Weights = Vector2.zero;
         }
 
         public T Get()

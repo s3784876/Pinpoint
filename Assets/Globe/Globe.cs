@@ -11,8 +11,7 @@ namespace Pinpoint.Globe
 
         public Globe()
         {
-            AttributeGlobes = new AttributeGlobe[3];
-            uint memoryAvalable = 0;
+            long memoryAvalable = 0;
 
             using (Process proc = Process.GetCurrentProcess())
             {
@@ -21,15 +20,15 @@ namespace Pinpoint.Globe
 
             //Fraction of memory to use * number of bytes of each vertex
             float[] memAllocations = {
-                0.5 * 21,
-                0.25 * 12,
-                0.125 * 130
+                0.5f * 21,
+                0.25f * 12,
+                0.125f * 130
             };
 
             for (int i = 0; i < memAllocations.Length; i++)
             {
                 memAllocations[i] *= memoryAvalable / 6;
-                memAllocations[i] = Math.Sqrt(memAllocations[i]);
+                memAllocations[i] = (int)Math.Sqrt(memAllocations[i]);
             }
 
             HeightGlobe = new HeightGlobe((int)memAllocations[0]);

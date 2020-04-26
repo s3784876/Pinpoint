@@ -1,6 +1,7 @@
 using Pinpoint.Globe.Vertexes;
 using Pinpoint.Globe.Faces;
 using UnityEngine;
+using System;
 
 namespace Pinpoint.Globe
 {
@@ -34,7 +35,7 @@ namespace Pinpoint.Globe
         {
             Faces.Mesh<T> mesh = FindFace(latitude, longitude);
 
-            return Faces.Mesh<T>.GetPoint(latitude, longitude);
+            return mesh.GetPoint(latitude, longitude);
         }
 
         //Known problems occur on the last row and last column of each face
@@ -43,20 +44,13 @@ namespace Pinpoint.Globe
         {
             Faces.Mesh<T> mesh = FindFace(latitude, longitude);
 
-            return Faces.Mesh<T>.GetInterpolatedPoint(latitude, longitude);
+            return mesh.GetInterpolatedPoint(latitude, longitude);
         }
 
         //Locates and returns the face responsible for the lat and long provided, does not normalise lat and long
         public Faces.Mesh<T> FindFace(float latitude, float longitude)
         {
             return GloballyMapCoordinants(ref latitude, ref longitude);
-        }
-
-        //x,y,z are all assumed to be in the range [0,Resolution)
-        public T FindPoint(int x, int y, int z)
-        {
-            var face, _x, _y = FindFace(x, y, z);
-            return face.GetPoint(_x, _y);
         }
 
         public (Faces.Mesh<T>, int, int) FindFace(int x, int y, int z)
@@ -71,7 +65,7 @@ namespace Pinpoint.Globe
             ay = Math.Abs(ny);
             az = Math.Abs(nz);
 
-            var f;
+            Mesh<T> f;
             int returnX, returnY;
 
             if (ay >= ax && ay >= az)
@@ -105,7 +99,7 @@ namespace Pinpoint.Globe
         //Returns the Faces.Mesh<T> responsible for the point, and returns the x,y co-ords of the point on that mesg
         public Faces.Mesh<T> GloballyMapCoordinants(ref float latitude, ref float longitude)
         {
-            var f;
+            Mesh<T> f;
 
             latitude = (float)(Math.PI * latitude / 180);
             longitude = (float)(Math.PI * longitude / 180);
@@ -152,9 +146,10 @@ namespace Pinpoint.Globe
         }
 
         //maps value x [-1,1] to [0,resolution]
-        private Clamp(float x)
+        private int Clamp(float x)
         {
-            return (x / 2 + 0.5) * Resolution;
+            //Keep close to 0 to ensure accuracy before adding 0.5
+            return (int)Math.Round((x / 2 + 0.5) * Resolution, MidpointRounding.AwayFromZero);
         }
 
         public T GetPoint(int x, int y, Vector3 localUp)
@@ -164,11 +159,19 @@ namespace Pinpoint.Globe
                 if (item.LocalUp == localUp)
                     return item.GetPoint(x, y);
             }
+            throw new NullReferenceException();
         }
 
-        protected T GetPoint(Point p)
+        //x,y,z are all assumed to be in the range [0,Resolution)
+        public T GetPoint(int x, int y, int z)
         {
-            return GetPoint(p.X, p.Y, p.Z);
+            var (face, _x, _y) = FindFace(x, y, z);
+            return face.GetPoint(_x, _y);
+        }
+
+        public T GetPoint(Point<T> p)
+        {
+            return GetPoint(p.x, p.y, p.z);
         }
 
         //Called to perform all the calculations to get the mesh to a completed state
