@@ -14,7 +14,7 @@ namespace Pinpoint.Globe.Vertexes
         //Stores 4 bits of information relevent to plotting errosion
         /*  Bit 1   Has Vegitation
             Bit 2   Is River
-            Bit 3   Is Ocean
+            Bit 3   Is Ocean/lake
          */
         private byte _Covering;
 
