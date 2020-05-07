@@ -3,7 +3,7 @@ using Pinpoint.Globe.Vertexes;
 
 namespace Pinpoint.Testing
 {
-    public class UnitTest
+    public static class UnitTest
     {
         public static bool TestAll()
         {

@@ -1,8 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "8gjDLTsA1zPkHeVgZNLopce+OaAQj0kxh6bZ1pVSsflmVkClm0cvA1xkgeqUPfSEbyMnSWwJVXWNqgHiHUGdQw==",
-  "success": true,
-  "projectFilePath": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj",
-  "expectedPackageFiles": [],
-  "logs": []
+  "dgSpecHash": "ltWpFpd1rGnT6N/mgppXqJOb2OtSdGaHC9Dndjbd6UPFG4ldda5DmZlXIRbMM7bicWrKO460Kyt7mgvdLfpDYQ==",
+  "success": false,
+  "projectFilePath": "/home/magnussonl/Documents/Unity/Pinpoint/Assembly-CSharp.csproj",
+  "expectedPackageFiles": [
+    "/home/magnussonl/.nuget/packages/jquery/2.1.1/jquery.2.1.1.nupkg.sha512",
+    "/home/magnussonl/.nuget/packages/sampledependency/1.0.0/sampledependency.1.0.0.nupkg.sha512",
+    "/home/magnussonl/.nuget/packages/unityengine/1.0.0/unityengine.1.0.0.nupkg.sha512",
+    "/home/magnussonl/.nuget/packages/unityengine.dll/1.0.0/unityengine.dll.1.0.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1202",
+      "level": "Error",
+      "message": "Package UnityEngine 1.0.0 is not compatible with netcoreapp3.1 (.NETCoreApp,Version=v3.1). Package UnityEngine 1.0.0 supports: net (.NETFramework,Version=v0.0)",
+      "libraryId": "UnityEngine",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v3.1"
+      ]
+    }
+  ]
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace Pinpoint.Globe
 {
-    public class GeometricMath
+    public static class GeometricMath
     {
         public static double EuclidianDistance(int x, int y)
         {

@@ -1,30 +1,28 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj": {}
+    "/home/magnussonl/Documents/Unity/Pinpoint/Pinpoint.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj": {
+    "/home/magnussonl/Documents/Unity/Pinpoint/Pinpoint.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj",
+        "projectUniqueName": "/home/magnussonl/Documents/Unity/Pinpoint/Pinpoint.csproj",
         "projectName": "Pinpoint",
-        "projectPath": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj",
-        "packagesPath": "C:\\Users\\Luke Magnusson\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\obj\\",
+        "projectPath": "/home/magnussonl/Documents/Unity/Pinpoint/Pinpoint.csproj",
+        "packagesPath": "/home/magnussonl/.nuget/packages/",
+        "outputPath": "/home/magnussonl/Documents/Unity/Pinpoint/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Luke Magnusson\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/magnussonl/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -55,7 +53,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.201/RuntimeIdentifierGraph.json"
         }
       }
     }

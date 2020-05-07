@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using System;
+using static Testing.UnitTest;
 
 namespace Pinpoint
 {
@@ -6,7 +8,7 @@ namespace Pinpoint
     {
         static void Main(string[] args)
         {
-            Testing.UnitTest.TestAll();
+            Console.WriteLine("Tests passed: " + TestAll());
         }
     }
 }

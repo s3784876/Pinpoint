@@ -1,69 +1,144 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {}
+    ".NETCoreApp,Version=v3.1": {
+      "jQuery/2.1.1": {
+        "type": "package"
+      },
+      "SampleDependency/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "jQuery": "2.1.1"
+        }
+      },
+      "UnityEngine/1.0.0": {
+        "type": "package"
+      },
+      "UnityEngine.dll/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "SampleDependency": "1.0.0"
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "jQuery/2.1.1": {
+      "sha512": "/cy0NGAGBx0W6XLqrnehQAKeJhfnZLDdPnBvlNLq/k4mraD1a7rbHBYzV5PYBaz9t5wh+VrGhPUbPztvnFAOrQ==",
+      "type": "package",
+      "path": "jquery/2.1.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Content/Scripts/jquery-2.1.1-vsdoc.js",
+        "Content/Scripts/jquery-2.1.1.js",
+        "Content/Scripts/jquery-2.1.1.min.js",
+        "Content/Scripts/jquery-2.1.1.min.map",
+        "Tools/common.ps1",
+        "Tools/install.ps1",
+        "Tools/jquery-2.1.1.intellisense.js",
+        "Tools/uninstall.ps1",
+        "jquery.2.1.1.nupkg.sha512",
+        "jquery.nuspec"
+      ]
+    },
+    "SampleDependency/1.0.0": {
+      "sha512": "rkrKnTI2KT/L+BaaB6/xZbDiqyQ702TxYp5adqgC/GYU7KBufnNArz/5KNetThpOeXmVEMg0VlFU+9/cKz0L4w==",
+      "type": "package",
+      "path": "sampledependency/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/Scripts/nugetexample.js",
+        "sampledependency.1.0.0.nupkg.sha512",
+        "sampledependency.nuspec"
+      ]
+    },
+    "UnityEngine/1.0.0": {
+      "sha512": "4e5TFELT89DzkWxYwvGWyMGU4+iaDoe1L04NtMFbTh7e3t3CRtyfxDqc37MIPPT3dcjnBUFyv4UEy8Ot2v6jNQ==",
+      "type": "package",
+      "path": "unityengine/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/UnityEngine.dll",
+        "unityengine.1.0.0.nupkg.sha512",
+        "unityengine.nuspec"
+      ]
+    },
+    "UnityEngine.dll/1.0.0": {
+      "sha512": "8xJshyFlj2tx2E+/1g4e5VRTNX6TpEf9tMwXgJ6YeXF9x9hWDMHpQK7stTvPJ5gIcRpUoNVtHAoR+SlhAgwx3Q==",
+      "type": "package",
+      "path": "unityengine.dll/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Taschenrechner.cs",
+        "UnityEngine.dll",
+        "nuget.exe",
+        "unityengine.dll.1.0.0.nupkg.sha512",
+        "unityengine.dll.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": []
+    ".NETCoreApp,Version=v3.1": [
+      "UnityEngine >= *",
+      "UnityEngine.dll >= *"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\Luke Magnusson\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "/home/magnussonl/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj",
-      "projectName": "Pinpoint",
-      "projectPath": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\Pinpoint.csproj",
-      "packagesPath": "C:\\Users\\Luke Magnusson\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Luke Magnusson\\Documents\\Coding\\Pinpoint\\Pinpoint\\obj\\",
+      "projectUniqueName": "/home/magnussonl/Documents/Unity/Pinpoint/Assembly-CSharp.csproj",
+      "projectName": "Assembly-CSharp",
+      "projectPath": "/home/magnussonl/Documents/Unity/Pinpoint/Assembly-CSharp.csproj",
+      "packagesPath": "/home/magnussonl/.nuget/packages/",
+      "outputPath": "/home/magnussonl/Documents/Unity/Pinpoint/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Luke Magnusson\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/magnussonl/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {}
         }
-      },
-      "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
       }
     },
     "frameworks": {
       "netcoreapp3.1": {
-        "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48"
-        ],
-        "assetTargetFallback": true,
-        "warn": true,
-        "frameworkReferences": {
-          "Microsoft.NETCore.App": {
-            "privateAssets": "all"
+        "dependencies": {
+          "UnityEngine": {
+            "target": "Package",
+            "version": "[*, )"
+          },
+          "UnityEngine.dll": {
+            "target": "Package",
+            "version": "[*, )"
           }
-        },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.201\\RuntimeIdentifierGraph.json"
+        }
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1202",
+      "level": "Error",
+      "message": "Package UnityEngine 1.0.0 is not compatible with netcoreapp3.1 (.NETCoreApp,Version=v3.1). Package UnityEngine 1.0.0 supports: net (.NETFramework,Version=v0.0)",
+      "libraryId": "UnityEngine",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v3.1"
+      ]
+    }
+  ]
 }
