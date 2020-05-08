@@ -60,9 +60,13 @@ namespace Pinpoint.Globe.Vertexes
             this.AverageHeight = wv.AverageHeight;
         }
 
-        public WindVertex()
+        public WindVertex(HeightVertex hv) : this()
         {
-            AverageHeight = new HeightVertex(0,null, null);
+            AverageHeight = hv;
+        }
+
+        private WindVertex()
+        {
             Seasons = new SeasonalWindVertex[2];
 
             for (int i = 0; i < Seasons.Length; i++)

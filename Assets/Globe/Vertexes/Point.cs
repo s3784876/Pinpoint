@@ -141,27 +141,18 @@ namespace Pinpoint.Globe.Vertexes
     {
       get
       {
-
         var (x, y) = XY;
         int xOffset = 0, yOffset = 0;
 
         var up = GetLocalUp();
 
-        if (up == Vector3.forward)
+        if (up == Vector3.forward || up == Vector3.left || up == Vector3.right)
         {
 
         }
         else if (up == Vector3.back)
         {
           xOffset = -Globe.Resolution;
-        }
-        else if (up == Vector3.left)
-        {
-
-        }
-        else if (up == Vector3.right)
-        {
-
         }
         else if (up == Vector3.up || up == Vector3.down)
         {

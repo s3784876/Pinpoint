@@ -15,17 +15,17 @@ namespace Pinpoint.Globe.Pathing
     private AtmosphereCell Cell;
     private bool isSummer;
     private byte Strike;
-    private readonly byte Accuracy;
+    private readonly float SucessRange;
     private readonly bool IsSummer;
 
 
-    public Head(Point<WindVertex> point, AtmosphereCell local, byte accuracy, bool isSummer)
+    public Head(Point<WindVertex> point, AtmosphereCell local, float sucessRange, bool isSummer)
     {
       this.Point = point;
       this.Cell = local;
 
       Strike = 0;
-      Accuracy = accuracy;
+      SucessRange = sucessRange;
       IsSummer = isSummer;
 
       Nodes = new List<Node>();
@@ -33,7 +33,7 @@ namespace Pinpoint.Globe.Pathing
 
     public void Start()
     {
-      Step(Point.CubeX, Point.CubeY);
+      Step(0,0);
     }
 
     public void Step(int sx, int sy)
@@ -41,13 +41,14 @@ namespace Pinpoint.Globe.Pathing
       var p = new Point<WindVertex>(Point);
       p.StepXY(sx, sy);
 
-      if (Math.Abs(Cell.EndLat - p.Latitude) < 127 / Accuracy)
+      //If it's within the defined leway then finish
+      if (Math.Abs(Cell.EndLat - p.Latitude) < SucessRange)
       {
         return;
       }
 
       //Get the reverse of the wind since we are back propigating
-      float wind = (float)(Cell.GetHeading(Point.Latitude, IsSummer) + Math.PI);
+      float wind = (float)(Cell.GetHeading(Point.Latitude, IsSummer) - Math.PI);
 
       for (int dx = -1; dx < 2; dx++)
       {
@@ -78,7 +79,17 @@ namespace Pinpoint.Globe.Pathing
       var nextPoint = new Point<WindVertex>(lastPoint);
       nextPoint.StepXY(x, y);
 
-      var heading = x == 0 ? Math.PI + Math.PI / 2 * y : Math.Tanh(y / x);
+      double heading;
+
+      try
+      {
+        heading = Math.Tanh(y / x);
+      }
+      catch (System.Exception)
+      {
+        //set to pi/2 or -3pi/2 when y is positive or negitive respectively
+        heading = Math.PI + Math.PI / 2 * y;
+      }
 
       var deltaHeight = nextPoint.GetPoint().AverageElevation()
                         - lastPoint.GetPoint().AverageElevation();

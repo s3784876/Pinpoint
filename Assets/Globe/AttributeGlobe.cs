@@ -9,7 +9,7 @@ namespace Pinpoint.Globe
     {
         public readonly int Resolution;
 
-        protected Faces.Mesh<T>[] Faces = new Faces.Mesh<T>[6];
+        public Faces.Mesh<T>[] Faces {get; protected set;} 
 
         private enum FIndex { up, down, right, left, back, front }
 
@@ -23,6 +23,8 @@ namespace Pinpoint.Globe
               Vector3.back,
               Vector3.forward
             };
+
+            Faces = new Faces.Mesh<T>[6];
 
             for (int i = 0; i < Faces.Length; i++)
             {

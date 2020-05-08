@@ -7,6 +7,7 @@ namespace Pinpoint.Globe.Vertexes
         private T[] Parents;
         Vector2 Weights;
 
+        
         public Grouping(T[] parents, Vector2 index)
         {
             this.Parents = parents;

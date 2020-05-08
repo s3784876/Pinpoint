@@ -33,7 +33,7 @@ namespace Pinpoint.Globe
 
             HeightGlobe = new HeightGlobe((int)memAllocations[0]);
             ClimateGlobe = new ClimateGlobe((int)memAllocations[1]);
-            WindGlobe = new WindGlobe((int)memAllocations[2]);
+            WindGlobe = new WindGlobe((int)memAllocations[2], HeightGlobe);
         }
 
         public void SimulateGlobes()
