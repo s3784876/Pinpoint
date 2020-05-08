@@ -27,6 +27,7 @@ namespace Pinpoint.Globe.Vertexes
         }
         #endregion
 
+        private HeightVertex AverageHeight;
         public SeasonalWindVertex[] Seasons { get; protected set; }
 
         public SeasonalWindVertex Summer
@@ -53,19 +54,26 @@ namespace Pinpoint.Globe.Vertexes
             }
         }
 
-        public WindVertex(WindVertex swv)
+        public WindVertex(WindVertex wv)
         {
-            this.Seasons = swv.Seasons;
+            this.Seasons = wv.Seasons;
+            this.AverageHeight = wv.AverageHeight;
         }
 
         public WindVertex()
         {
+            AverageHeight = new HeightVertex(0,null, null);
             Seasons = new SeasonalWindVertex[2];
 
             for (int i = 0; i < Seasons.Length; i++)
             {
                 Seasons[i] = new SeasonalWindVertex();
             }
+        }
+
+        public float AverageElevation()
+        {
+            return AverageHeight.CurrentHeight;
         }
     }
 

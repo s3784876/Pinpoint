@@ -171,7 +171,7 @@ namespace Pinpoint.Globe
 
         public T GetPoint(Point<T> p)
         {
-            return GetPoint(p.x, p.y, p.z);
+            return GetPoint(p.CubeX, p.CubeY, p.CubeZ);
         }
 
         //Called to perform all the calculations to get the mesh to a completed state
