@@ -1,7 +1,7 @@
 using System;
-using Pinpoint.Globe;
+using System.Collections.Generic;
 
-namespace Pinpoint.Globe.Vertexes
+namespace Pinpoint.Globes.Vertexes
 {
 
   public class ClimateVertex : IInterpolatable<ClimateVertex>
@@ -29,6 +29,8 @@ namespace Pinpoint.Globe.Vertexes
 
     #endregion
 
+    public readonly WindVertex WindVertex;
+    public readonly Area<HeightVertex> HeightVertexes;
 
     SeasonVertex[] seasons;
 
@@ -55,6 +57,11 @@ namespace Pinpoint.Globe.Vertexes
       }
     }
 
+    public SeasonVertex GetSeason(bool isSummer)
+    {
+      return isSummer ? summer : winter;
+    }
+
     #region climate clasification
     //Simplified Koppen Climate Classification
     public enum Climate
@@ -79,7 +86,7 @@ namespace Pinpoint.Globe.Vertexes
 
     };
 
-    public readonly string[] ClimateNames = {
+    public readonly static string[] ClimateNames = {
             "Mountain",
             "Ocean",
             "Tropical Rainforrest",
@@ -147,6 +154,8 @@ namespace Pinpoint.Globe.Vertexes
         return Climate.Hot_Steppe;
     }
 
+
+
     private Climate MidLatitudeCell(int latitude)
     {
       float seasonalRainVariation = winter.AnualRain == 0 ?
@@ -212,6 +221,25 @@ namespace Pinpoint.Globe.Vertexes
       return totalRain > 0.5 * precipitationScore
       && totalRain < precipitationScore;
     }
+
+    public override bool Equals(object obj)
+    {
+      return obj is ClimateVertex vertex &&
+             EqualityComparer<WindVertex>.Default.Equals(WindVertex, vertex.WindVertex) &&
+             EqualityComparer<Area<HeightVertex>>.Default.Equals(HeightVertexes, vertex.HeightVertexes) &&
+             EqualityComparer<SeasonVertex[]>.Default.Equals(seasons, vertex.seasons);
+    }
+
+    public override int GetHashCode()
+    {
+      int hashCode = -1583679682;
+      hashCode = hashCode * -1521134295 + EqualityComparer<WindVertex>.Default.GetHashCode(WindVertex);
+      hashCode = hashCode * -1521134295 + EqualityComparer<Area<HeightVertex>>.Default.GetHashCode(HeightVertexes);
+      hashCode = hashCode * -1521134295 + EqualityComparer<SeasonVertex[]>.Default.GetHashCode(seasons);
+      return hashCode;
+    }
+
+
     #endregion
 
     #region Constructors
@@ -225,7 +253,7 @@ namespace Pinpoint.Globe.Vertexes
       seasons = sv;
     }
 
-    public ClimateVertex() : this(0, 0, 0, 0)
+    public ClimateVertex(Grouping<WindVertex> g) : this(0, 0, 0, 0, g)
     { }
 
     private ClimateVertex(ClimateVertex cv)
@@ -233,13 +261,17 @@ namespace Pinpoint.Globe.Vertexes
       this.seasons = cv.seasons;
     }
 
-    public ClimateVertex(float summerRain, sbyte summerTempreture, float winterRain, sbyte winterTempreture)
+    public ClimateVertex(float summerRain, sbyte summerTempreture, float winterRain, sbyte winterTempreture, Grouping<WindVertex> g)
     {
       summer = new SeasonVertex(1, summerRain, 1, summerTempreture);
       winter = new SeasonVertex(1, winterRain, 1, winterTempreture);
+
+      WindVertex = g.Get();
     }
 
     #endregion
+
+
 
     public class SeasonVertex : IInterpolatable<SeasonVertex>
     {
@@ -267,6 +299,26 @@ namespace Pinpoint.Globe.Vertexes
 
         return sv;
       }
+
+      public override bool Equals(object obj)
+      {
+        return obj is SeasonVertex vertex &&
+               _SoilHardness == vertex._SoilHardness &&
+               _AnualRain == vertex._AnualRain &&
+               _Tempreture == vertex._Tempreture &&
+               _Humidity == vertex._Humidity;
+      }
+
+      public override int GetHashCode()
+      {
+        int hashCode = 465157026;
+        hashCode = hashCode * -1521134295 + _SoilHardness.GetHashCode();
+        hashCode = hashCode * -1521134295 + _AnualRain.GetHashCode();
+        hashCode = hashCode * -1521134295 + _Tempreture.GetHashCode();
+        hashCode = hashCode * -1521134295 + _Humidity.GetHashCode();
+        return hashCode;
+      }
+
 
       #endregion
 

@@ -1,11 +1,14 @@
 
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Pathing;
+using Pinpoint.Globes.Vertexes;
 using System;
 
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
   public class WindGlobe : AttributeGlobe<WindVertex>
   {
+    private const float PathAccuracy = 1f;
+
     private AtmosphereCell[] Cells = new AtmosphereCell[4];
 
     public WindGlobe(int resolution, AttributeGlobe<HeightVertex> heights) : this(resolution)
@@ -45,8 +48,8 @@ namespace Pinpoint.Globe
                 hvs[xOffset, yOffset] = heights.Faces[i].GetPoint(xOffset + x, yOffset + y);
               }
             }
-            Area<HeightVertex> group = new Area<HeightVertex>(hvs);
 
+            Area<HeightVertex> group = new Area<HeightVertex>(hvs);
 
             Faces[i].SetPoint(x, y, new WindVertex(group.Average()));
 
@@ -61,7 +64,7 @@ namespace Pinpoint.Globe
       Cells[0] = new AtmosphereCell(30, 60, 0, 90);
 
       //Hadley cell in north hemisphere
-      Cells[1] = new AtmosphereCell(30, 0, 180, 270);
+      Cells[1] = new AtmosphereCell(0, 30, 270, 180);
 
       //Hadley Cell in southern Hemisphere
       Cells[2] = new AtmosphereCell(-30, 0, 360, 270);
@@ -82,6 +85,8 @@ namespace Pinpoint.Globe
       Console.WriteLine("All cells completed");
     }
 
+
+    //TODO add A* pathing after testing the ground independent method
     private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
     {
       Point<WindVertex> p;
@@ -105,6 +110,8 @@ namespace Pinpoint.Globe
         heading = currentLocal.GetHeading(p.Latitude, isSummer);
         wl = new WindLayer(magnitude, heading);
 
+        var startXY = p.AbsoluteXY;
+
         do
         {
           wv = GetPoint(p);
@@ -117,7 +124,7 @@ namespace Pinpoint.Globe
           sv = new SeasonalWindVertex(wl);
 
           p.StepX();
-        } while (p.Longitude != startLong);
+        } while (p.AbsoluteXY != startXY);
 
         //Step towards the pole
         if (goingUp)
@@ -129,8 +136,12 @@ namespace Pinpoint.Globe
       Console.WriteLine($"Finished {(isSummer ? "Summer" : "Winter")} \t in the {currentLocal.StartLat},{currentLocal.EndLat} cell");
     }
 
-    private void SimulatePath(Point<WindVertex> p, AtmosphereCell currentLocal)
+    private void SimulatePath(Point<WindVertex> p, AtmosphereCell currentLocal, bool isSummer)
     {
+      Head h = new Head(p, currentLocal, PathAccuracy, isSummer);
+
+      h.Start();
+
       throw new System.NotImplementedException();
     }
   }

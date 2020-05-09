@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
 
-using static Pinpoint.Globe.GeometricMath;
+using Pinpoint.Globes.Faces;
 
-namespace Pinpoint.Globe.Vertexes
+using static Pinpoint.Globes.GeometricMath;
+
+namespace Pinpoint.Globes.Vertexes
 {
   public class Point<T> where T : IInterpolatable<T>
   {
@@ -197,9 +199,9 @@ namespace Pinpoint.Globe.Vertexes
               y = CubeZ;
             }
           }
-            //Compress x into the range [0,Resolution)
-            //Or the range (-resolution,0] when x is negitive
-          x = (y-x) * Globe.Resolution/(-2*y+10);
+          //Compress x into the range [0,Resolution)
+          //Or the range (-resolution,0] when x is negitive
+          x = (y - x) * Globe.Resolution / (-2 * y + 10);
         }
         else
         {
@@ -268,9 +270,7 @@ namespace Pinpoint.Globe.Vertexes
     }
 
     public Point(Point<T> point) : this(point._x, point._y, point._z, point.Globe)
-    {
-
-    }
+    { }
 
     public Point(int x, int y, int z, AttributeGlobe<T> globe) : this(globe)
     {
@@ -283,6 +283,11 @@ namespace Pinpoint.Globe.Vertexes
     {
       this._Latitude = latitude;
       this._Longitude = longitude;
+    }
+
+    public Point(Vector3 coords, AttributeGlobe<T> globe) : this((int)coords.x, (int)coords.y, (int)coords.z, globe)
+    {
+
     }
 
     private void Recalculate()
@@ -456,6 +461,11 @@ namespace Pinpoint.Globe.Vertexes
     public T GetPoint()
     {
       return Globe.GetPoint(this);
+    }
+
+    public Mesh<T> GetMesh()
+    {
+      return Globe.GetFace(Latitude, Longitude);
     }
   }
 }

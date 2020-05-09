@@ -1,17 +1,25 @@
 using System.Collections.Generic;
 
-namespace Pinpoint.Globe.Vertexes
+namespace Pinpoint.Globes.Vertexes
 {
   public class Area<T> where T : IInterpolatable<T>
   {
     private T[,] elements;
+
+
 
     public Area(T[,] elements)
     {
       this.elements = elements;
     }
 
+    public T[,] GetElements()
+    {
+      return elements;
+    }
+
     public T Average()
+
     {
       for (int step = 2; step < elements.Length * 2; step *= step)
       {
@@ -31,5 +39,18 @@ namespace Pinpoint.Globe.Vertexes
 
       return elements[0, 0];
     }
+
+    public override bool Equals(object obj)
+    {
+      return obj is Area<T> area &&
+             EqualityComparer<T[,]>.Default.Equals(elements, area.elements);
+    }
+
+    public override int GetHashCode()
+    {
+      return 272633004 + EqualityComparer<T[,]>.Default.GetHashCode(elements);
+    }
   }
+
+
 }

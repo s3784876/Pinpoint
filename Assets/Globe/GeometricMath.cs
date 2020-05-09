@@ -1,6 +1,6 @@
 using System;
 
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
     public static class GeometricMath
     {

@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 
-namespace Pinpoint.Globe.Faces
+namespace Pinpoint.Globes.Faces
 {
   public class Mesh<T> where T : IInterpolatable<T>
   {
-    T[] Vertexes;
+    public T[] Vertexes {get; private set;}
     public readonly Vector3 LocalUp;
 
     private readonly int Resolution;

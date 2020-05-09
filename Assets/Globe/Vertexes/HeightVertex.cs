@@ -1,8 +1,9 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Net;
-using Pinpoint.Globe;
+using Pinpoint.Globes;
+using System.Collections.Generic;
 
-namespace Pinpoint.Globe.Vertexes
+namespace Pinpoint.Globes.Vertexes
 {
   public class HeightVertex : IInterpolatable<HeightVertex>
   {
@@ -159,6 +160,27 @@ namespace Pinpoint.Globe.Vertexes
     public bool IsChild(ClimateVertex cv)
     {
       return Climate.Equals(cv);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is HeightVertex vertex &&
+             InitialHeight == vertex.InitialHeight &&
+             CurrentHeight == vertex.CurrentHeight &&
+             EqualityComparer<Grouping<ClimateVertex>>.Default.Equals(Climate, vertex.Climate) &&
+             EqualityComparer<Grouping<WindVertex>>.Default.Equals(Wind, vertex.Wind) &&
+             _Covering == vertex._Covering;
+    }
+
+    public override int GetHashCode()
+    {
+      int hashCode = -208916772;
+      hashCode = hashCode * -1521134295 + InitialHeight.GetHashCode();
+      hashCode = hashCode * -1521134295 + CurrentHeight.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<Grouping<ClimateVertex>>.Default.GetHashCode(Climate);
+      hashCode = hashCode * -1521134295 + EqualityComparer<Grouping<WindVertex>>.Default.GetHashCode(Wind);
+      hashCode = hashCode * -1521134295 + _Covering.GetHashCode();
+      return hashCode;
     }
   }
 }

@@ -1,6 +1,6 @@
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
     public class HeightGlobe : AttributeGlobe<HeightVertex>
     {

@@ -1,7 +1,7 @@
 using System.Diagnostics;
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 using System;
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
     public class Globe
     {

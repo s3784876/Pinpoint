@@ -1,9 +1,9 @@
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 
-namespace Pinpoint.Globe.Pathing
+namespace Pinpoint.Globes.Pathing
 {
   public class Head
   {

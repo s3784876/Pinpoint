@@ -1,6 +1,6 @@
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 
-namespace Pinpoint.Globe.Pathing
+namespace Pinpoint.Globes.Pathing
 {
   class Node
   {

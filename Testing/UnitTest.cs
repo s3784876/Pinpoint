@@ -1,78 +1,153 @@
-using Pinpoint.Globe;
-using Pinpoint.Globe.Vertexes;
+
+using System;
+using Pinpoint.Globes;
+using Pinpoint.Globes.Vertexes;
 
 namespace Pinpoint.Testing
 {
-    public static class UnitTest
+  public static class UnitTest
+  {
+    public static bool TestAll()
     {
-        public static bool TestAll()
+      bool isWorking = true;
+
+      isWorking &= TestWindModel();
+      isWorking &= TestPointModel();
+      isWorking &= TestClimateModel();
+
+      if (!isWorking)
+        return isWorking;
+
+
+      isWorking &= TestHeightMapping();
+      isWorking &= TestWindMapping();
+      isWorking &= TestClimateMapping();
+
+      if (!isWorking)
+        return isWorking;
+
+
+      isWorking &= DryRun();
+
+      return isWorking;
+    }
+
+    private static void PrintError(string cause, Exception ex)
+    {
+
+      Console.WriteLine(cause + " failed with error:");
+      Console.WriteLine('\t' + ex.ToString());
+      Console.WriteLine('\t' + '\t' + ex.StackTrace);
+    }
+
+    public static bool TestHeightMapping()
+    {
+      HeightGlobe h = new HeightGlobe(100);
+      try
+      {
+        h.Simulate();
+      }
+      catch (Exception ex)
+      {
+        PrintError("Height Mapping", ex);
+        return false;
+      }
+      return true;
+    }
+
+    public static bool TestWindMapping()
+    {
+
+      WindGlobe w = new WindGlobe(100, new HeightGlobe(100*10));
+      try
+      {
+        w.Simulate();
+      }
+      catch (Exception ex)
+      {
+          PrintError("Wind Mapping", ex);
+        return false;
+      }
+
+      return true;
+    }
+
+    public static bool TestClimateMapping()
+    {
+      ClimateGlobe c = new ClimateGlobe(100);
+      try
+      {
+        c.Simulate();
+      }
+      catch (Exception ex)
+      {
+        PrintError("Climate Mapping", ex);
+        return false;
+      }
+
+      return true;
+    }
+
+    public static bool TestPointModel()
+    {
+      Console.WriteLine("Testing Point Model");
+      const int resolution = 128;
+
+      Point<HeightVertex> p = new Point<HeightVertex>(0f, 0f, new HeightGlobe(resolution));
+
+      try
+      {
+        for (int i = 0; i <= resolution * 5; i++)
         {
-            TestWindModel();
-            TestClimateModel();
+          //If the loop failed to get back to where we started
+          if (i == resolution * 5)
+          {
+            throw new Exception();
+          }
 
-
-            TestHeightMapping();
-            TestWindMapping();
-            TestClimateMapping();
-
-            DryRun();
+          p.StepX();
+          if (p.Latitude == 0f && p.Latitude == 0f)
+            break;
         }
+      }
+      catch (System.Exception)
+      {
+        return false;
+        throw;
+      }
 
-        public static bool TestHeightMapping()
+      //Test over one of the poles
+      p.StepY(resolution + resolution / 2);
+
+      try
+      {
+        for (int i = 0; i <= resolution * 3; i++)
         {
-            HeightGlobe h = new HeightGlobe(100);
-            try
-            {
-                h.Simulate();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Height Mapping failed with error:");
-                Console.WriteLine(ex.GetType());
-                Console.WriteLine(ex.message);
-                Console.WriteLine(ex.StackTrace);
-                return false;
-            }
+          //If the loop failed to get back to where we started
+          if (i == resolution * 3)
+          {
+            throw new Exception();
+          }
+
+          p.StepX();
+
+          //If a sucessful circut has been performed
+          if (p.Latitude == 0f && p.Latitude == 0f)
+            break;
         }
+      }
+      catch (System.Exception)
+      {
+        return false;
+        throw;
+      }
 
-        public static bool TestWindMapping()
-        {
+      return true;
+    }
 
-            WindGlobe w = new WindGlobe(100);
-            try
-            {
-                w.Simulate();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Wind Mapping failed with error:");
-                Console.WriteLine(ex.GetType());
-                Console.WriteLine(ex.message);
-                Console.WriteLine(ex.StackTrace);
-                return false;
-            }
-        }
-
-        public static bool TestClimateMapping()
-        {
-            ClimateGlobe c = new ClimateGlobe(100);
-            try
-            {
-                c.Simulate();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cliamte Mapping failed with error:");
-                Console.WriteLine('\t' + ex.GetType());
-                Console.WriteLine('\t' + '\t' + ex.message);
-                Console.WriteLine('\t' + '\t' + ex.StackTrace);
-                return false;
-            }
-        }
-
-        public static bool TestClimateModel()
-        {
-            string[] expectedResults = {
+    public static bool TestClimateModel()
+    {
+      string[] expectedResults = {
                 "Tropical Rainforrest",
                 "Tropical Monsoon",     //Miami
                 "Tropical Savannah",    //Darwin
@@ -89,7 +164,7 @@ namespace Pinpoint.Testing
                 "Polar Ice Caps"
             };
 
-            int[] summerRainfalls = {
+      int[] summerRainfalls = {
                 721,
                 50 * 12,
                 375 * 12,
@@ -111,7 +186,7 @@ namespace Pinpoint.Testing
                 0
             };
 
-            int[] winterRainfalls = {
+      int[] winterRainfalls = {
                 721,
                 190 * 12,
                 10*12,
@@ -134,7 +209,7 @@ namespace Pinpoint.Testing
                 0
             };
 
-            int[] summerTemps = {
+      sbyte[] summerTemps = {
                 20,
                 20,
                 20,
@@ -156,7 +231,7 @@ namespace Pinpoint.Testing
                 -1
             };
 
-            int[] winterTemps = {
+      sbyte[] winterTemps = {
                 20,
                 20,
                 20,
@@ -179,8 +254,7 @@ namespace Pinpoint.Testing
                 -10
             };
 
-
-            int[] latitude = {
+      int[] latitude = {
                 15,
                 15,
                 15,
@@ -200,73 +274,76 @@ namespace Pinpoint.Testing
             };
 
 
-            for (int i = 0; i < expectedResults.Length; i++)
-            {
-                ClimateVertex v = new ClimateVertex(summerRainfalls[i], summerTemps[i], winterRainfalls[i], winterTemps[i]);
-                ClimateVertex.Climate c = v.Classification(1, latitude[i]);
+      for (int i = 0; i < expectedResults.Length; i++)
+      {
+        ClimateVertex v = new ClimateVertex(summerRainfalls[i], summerTemps[i], winterRainfalls[i], winterTemps[i]);
+        ClimateVertex.Climate c = v.Classification(1, latitude[i]);
 
-                Console.WriteLine($"Result: {ClimateVertex.ClimateNames[(int)c]}\t\tExpected: {expectedResults[i]}");
+        Console.WriteLine($"Result: {ClimateVertex.ClimateNames[(int)c]}\t\tExpected: {expectedResults[i]}");
 
-                if (ClimateVertex.ClimateNames[(int)c] != expectedResults[i])
-                {
-                    Console.WriteLine("Unexpected result in climate clasification");
-                    throw new System.Exception();
-                }
-            }
-        }
-
-        public static bool TestWindModel()
+        if (ClimateVertex.ClimateNames[(int)c] != expectedResults[i])
         {
-            int[] expectedResults = {
+          Console.WriteLine("Unexpected result in climate clasification");
+          throw new System.Exception();
+        }
+      }
+
+      return true;
+    }
+
+    public static bool TestWindModel()
+    {
+      byte[] expectedResults = {
                 5,
                 5,
                 13,
                 13
             };
 
-            int[] xVelocities = {
+      byte[] xVelocities = {
                 3,
                 4,
                 5,
                 12
             };
 
-            int[] yVelocities = {
+      byte[] yVelocities = {
                 4,
                 3,
                 12,
                 5
             };
 
-            int x, y, r;
+      byte x, y, r;
 
-            for (int i = 0; i < expectedReults.Length; i++)
-            {
-                (x, y, r) = (xVelocities[i], yVelocities[i], expectedResults[i]);
-                WindLayer l = new WindLayer(x, y);
+      for (int i = 0; i < expectedResults.Length; i++)
+      {
+        (x, y, r) = (xVelocities[i], yVelocities[i], expectedResults[i]);
+        WindLayer l = new WindLayer(x, y);
 
-                Console.WriteLine($"Inputs: ({x},{x})\tReult: {l.Velocity}\tExpected: {r}");
+        Console.WriteLine($"Inputs: ({x},{x})\tReult: {l.Velocity}\tExpected: {r}");
 
-                if (l.Velocity != r)
-                    throw new System.Exception();
-            }
-        }
+        if (l.Velocity != r)
+          throw new System.Exception();
+      }
 
-        public static bool DryRun()
-        {
-            try
-            {
-                Globe g = new Globe();
-                g.SimulateGlobes();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Dry run failed with error:");
-                Console.WriteLine('\t' + ex.GetType());
-                Console.WriteLine('\t' + '\t' + ex.message);
-                Console.WriteLine('\t' + '\t' + ex.StackTrace);
-                return false;
-            }
-        }
+      return true;
     }
+
+    public static bool DryRun()
+    {
+      try
+      {
+        Globe g = new Globe();
+        g.SimulateGlobes();
+      }
+      catch (Exception ex)
+      {
+        PrintError("Dry Run", ex);
+        return false;
+      }
+
+      return true;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace Pinpoint.Globe.Vertexes
+namespace Pinpoint.Globes.Vertexes
 {
     public interface IInterpolatable<T>
     {
