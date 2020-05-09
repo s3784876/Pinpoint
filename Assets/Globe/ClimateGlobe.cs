@@ -8,7 +8,7 @@ using static Pinpoint.Globes.Vertexes.ClimateVertex;
 
 namespace Pinpoint.Globes
 {
-  public class ClimateGlobe : AttributeGlobe<ClimateVertex>
+  public class ClimateGlobe : GlobeVertexes<ClimateVertex>
   {
     public ClimateGlobe(int resolution) : base(resolution)
     { }

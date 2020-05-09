@@ -262,9 +262,9 @@ namespace Pinpoint.Globes.Vertexes
       return (int)Math.Round(x / 2 + 0.5 * Globe.Resolution, MidpointRounding.AwayFromZero);
     }
 
-    AttributeGlobe<T> Globe;
+    GlobeVertexes<T> Globe;
 
-    public Point(AttributeGlobe<T> globe)
+    public Point(GlobeVertexes<T> globe)
     {
       this.Globe = globe;
     }
@@ -272,20 +272,20 @@ namespace Pinpoint.Globes.Vertexes
     public Point(Point<T> point) : this(point._x, point._y, point._z, point.Globe)
     { }
 
-    public Point(int x, int y, int z, AttributeGlobe<T> globe) : this(globe)
+    public Point(int x, int y, int z, GlobeVertexes<T> globe) : this(globe)
     {
       this.CubeX = x;
       this.CubeY = y;
       this.CubeZ = z;
     }
 
-    public Point(float latitude, float longitude, AttributeGlobe<T> globe) : this(globe)
+    public Point(float latitude, float longitude, GlobeVertexes<T> globe) : this(globe)
     {
       this._Latitude = latitude;
       this._Longitude = longitude;
     }
 
-    public Point(Vector3 coords, AttributeGlobe<T> globe) : this((int)coords.x, (int)coords.y, (int)coords.z, globe)
+    public Point(Vector3 coords, GlobeVertexes<T> globe) : this((int)coords.x, (int)coords.y, (int)coords.z, globe)
     {
 
     }

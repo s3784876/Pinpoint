@@ -6,7 +6,7 @@ using System;
 
 namespace Pinpoint.Globes
 {
-  public abstract class AttributeGlobe<T> where T : IInterpolatable<T>
+  public abstract class GlobeVertexes<T> where T : IInterpolatable<T>
   {
     public readonly int Resolution;
 
@@ -14,7 +14,7 @@ namespace Pinpoint.Globes
 
     private enum FIndex { up, down, right, left, back, front }
 
-    public AttributeGlobe(int resolution)
+    public GlobeVertexes(int resolution)
     {
       Vector3[] ups = {
               Vector3.up,

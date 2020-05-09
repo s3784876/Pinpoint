@@ -5,13 +5,13 @@ using System;
 
 namespace Pinpoint.Globes
 {
-  public class WindGlobe : AttributeGlobe<WindVertex>
+  public class WindGlobe : GlobeVertexes<WindVertex>
   {
     private const float PathAccuracy = 1f;
 
     private AtmosphereCell[] Cells = new AtmosphereCell[4];
 
-    public WindGlobe(int resolution, AttributeGlobe<HeightVertex> heights) : this(resolution)
+    public WindGlobe(int resolution, GlobeVertexes<HeightVertex> heights) : this(resolution)
     {
 
       int heightX, heightY;
