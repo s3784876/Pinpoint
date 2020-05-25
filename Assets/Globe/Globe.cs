@@ -1,73 +1,51 @@
 using System.Diagnostics;
-
+using Pinpoint.Globes.Vertexes;
 using System;
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
-    public class Globe
+  public class Globe
+  {
+    private GlobeVertexes<HeightVertex> HeightGlobe;
+    private GlobeVertexes<ClimateVertex> ClimateGlobe;
+    private GlobeVertexes<WindVertex> WindGlobe;
+
+    public Globe()
     {
-        private AttributeGlobe[] AttributeGlobe;
+      long memoryAvalable = 0;
 
-        private readonly AttributeGlobe HeightGlobe
-        {
-            get
-            {
-                return AttributeGlobe[0];
-            }
-        }
-        private readonly AttributeGlobe ClimateGlobe
-        {
-            get
-            {
-                return AttributeGlobe[1];
-            }
-        }
+      using (Process proc = Process.GetCurrentProcess())
+      {
+        memoryAvalable = proc.PrivateMemorySize64;
+      }
 
-        private readonly AttributeGlobe WindGlobe
-        {
-            get
-            {
-                return AttributeGlobe[2];
-            }
-        }
-
-        public Globe()
-        {
-            AttributeGlobe = new AttributeGlobe[3];
-            uint memoryAvalable = 0;
-
-            using (Process proc = Process.GetCurrentProcess())
-            {
-                memoryAvalable = proc.PrivateMemorySize64;
-            }
-
-            //Fraction of memory to use * number of bytes of each vertex
-            float[] memAllocations = {
-                0.5 * 21,
-                0.25 * 12,
-                0.125 * 130
+      //Fraction of memory to use * number of bytes of each vertex
+      float[] memAllocations = {
+                0.5f * 21,
+                0.25f * 12,
+                0.125f * 130
             };
 
-            for (int i = 0; i < memAllocations.Length; i++)
-            {
-                memAllocations[i] *= memoryAvalable / 6;
-                memAllocations[i] = Math.Sqrt(memAllocations[i]);
-            }
+      for (int i = 0; i < memAllocations.Length; i++)
+      {
+        memAllocations[i] *= memoryAvalable / 6;
+        memAllocations[i] = (int)Math.Sqrt(memAllocations[i]);
+      }
 
-            AttributeGlobe[0] = new AttributeGlobe<HeightMesh, HeightVertex>((int)memAllocations[0]);
-            AttributeGlobe[1] = new AttributeGlobe<ClimateMesh, ClimateVertex>((int)memAllocations[1]);
-            AttributeGlobe[2] = new AttributeGlobe<WindMesh, WindVertex>((int)memAllocations[2]);
-        }
-
-        public void SimulateGlobes()
-        {
-            Console.WriteLine("Working on Height map");
-            HeightGlobe.Simulate();
-
-            Console.WriteLine("Working On wind map");
-            WindGlobe.Simulate();
-
-            Console.WriteLine("Working On climate Map");
-            ClimateGlobe.Simulate();
-        }
+      HeightGlobe = new HeightGlobe((int)memAllocations[0]);
+      ClimateGlobe = new ClimateGlobe((int)memAllocations[1]);
+      WindGlobe = new WindGlobe((int)memAllocations[2], HeightGlobe);
     }
+
+    public void SimulateGlobes()
+    {
+      Console.WriteLine("Working on Height map");
+      HeightGlobe.Simulate();
+
+      Console.WriteLine("Working On wind map");
+      WindGlobe.Simulate();
+
+      Console.WriteLine("Working On climate Map");
+      ClimateGlobe.Simulate();
+    }
+  }
 }

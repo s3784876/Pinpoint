@@ -1,95 +1,148 @@
-using Pinpoint.Globe.Vertexes;
 
-namespace Pinpoint.Globe
+using Pinpoint.Globes.Pathing;
+using Pinpoint.Globes.Vertexes;
+using System;
+
+namespace Pinpoint.Globes
 {
-    public class WindGlobe : AAttributeGlobe<WindVertex>
+  public class WindGlobe : GlobeVertexes<WindVertex>
+  {
+    private const float PathAccuracy = 1f;
+
+    private AtmosphereCell[] Cells = new AtmosphereCell[4];
+
+    public WindGlobe(int resolution, GlobeVertexes<HeightVertex> heights) : this(resolution)
     {
-        private AtmosphereCell[] Cells = new AtmosphereCell[4];
 
-        public WindGlobe()
+      int heightX, heightY;
+      int scaleFactor = (int)Math.Sqrt(heights.Resolution / (double)resolution);
+
+
+      //Get average height for each wind node
+      for (int i = 0; i < 6; i++)
+      {
+        for (int x = 0; x < resolution; x++)
         {
-            //Ferrel cell in northern hemisphere
-            Cells[0] = new AtmosphereCell(30, 60, 0, 90);
+          heightX = (int)(x / (float)resolution * heights.Resolution);
 
-            //Hadley cell in north hemisphere
-            Cells[1] = new AtmosphereCell(30, 0, 180, 270);
+          for (int y = 0; y < resolution; y++)
+          {
+            heightY = (int)(y / (float)resolution * heights.Resolution);
 
-            //Hadley Cell in southern Hemisphere
-            Cells[2] = new AtmosphereCell(-30, 0, 360, 270);
 
-            //Ferrel cell in southern hemisphere
-            Cells[3] = new AtmosphereCell(-60, -30, 180, 90);
-        }
+            int xStart = Math.Max(-scaleFactor / 2, -heightX),
+            yStart = Math.Max(-scaleFactor / 2, -heightY),
+            xEnd = Math.Min(scaleFactor / 2, heights.Resolution - heightX),
+            yEnd = Math.Min(scaleFactor / 2, heights.Resolution - heightY);
 
-        public override void Simulate()
-        {
-            //throw new System.NotImplementedException();
-            float lat = 0, lon = 0;
+            HeightVertex[,] hvs = new HeightVertex[xEnd - xStart,
+            yEnd - yStart];
 
-            for (byte season = 0; season < 2; season++)
+            for (int xOffset = xStart;
+            xOffset < xEnd; xOffset++)
             {
-                //TYODO FIX INPUTS
-                //Simulate Ferrel Cell in the northern Hemisphere
-                SimulateCell(Cell.FERREL_FROM_CAPRICORN, season == 0);
 
-
-                //Simulate Hadley Cell in the northern Hemisphere
-                SimulateCell(Cell.HADLEY_IN_CAPRICORN, season == 0);
-
-
-                //Simulate Hadley Cell in the Southern Hemisphere
-                SimulateCell(Cell.HADLEY_IN_CANCER, season == 0);
-
-
-                //Simulate Ferrel Cell in the Southern Hemisphere
-                SimulateCell(Cell.FERREL_FROM_CANCER, season == 0);
+              for (int yOffset = yStart;
+              yOffset < yEnd; yOffset++)
+              {
+                hvs[xOffset, yOffset] = heights.Faces[i].GetPoint(xOffset + x, yOffset + y);
+              }
             }
+
+            Area<HeightVertex> group = new Area<HeightVertex>(hvs);
+
+            Faces[i].SetPoint(x, y, new WindVertex(group.Average()));
+
+          }
         }
-
-        private enum Cell
-        {
-            POLAR_FROM_ARCTIC,
-            FERREL_FROM_CANCER,
-            HADLEY_IN_CANCER,
-
-            HADLEY_IN_CAPRICORN,
-            FERREL_FROM_CAPRICORN,
-            POLAR_FROM_ANTARCTIC,
-        }
-
-        private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
-        {
-            WindVertex head;
-
-            for (int i = 0; i < Faces[0].Resolution; i++)
-            {
-                head = GetGlobalPoint(lat, i);
-            }
-        }
-
-        //TODO manage polar cells and work out what the hell is going on with them during summer and winter
-        private float GetLat(Cell local, bool isSummer)
-        {
-            /* 
-            
-                    SUMMER  |   WINTER
-            FerrelN 90      |   60
-            HadleyN 60      |   0
-            HadleyS 0       |   -30
-            FerrelS -30     |   -90
-            
-            */
-
-            int index = (int)local * -1 + 2;
-            index *= 30;
-            index -= (index < 0) ? 30 : 0;
-
-            return index + (isSummer ? 60 : 0);
-        }
-
-        private float heading(float lat, Cell cell)
-        {
-
-        }
+      }
     }
+
+    private WindGlobe(int resolution) : base(resolution)
+    {
+      //Ferrel cell in northern hemisphere
+      Cells[0] = new AtmosphereCell(30, 60, 0, 90);
+
+      //Hadley cell in north hemisphere
+      Cells[1] = new AtmosphereCell(0, 30, 270, 180);
+
+      //Hadley Cell in southern Hemisphere
+      Cells[2] = new AtmosphereCell(-30, 0, 360, 270);
+
+      //Ferrel cell in southern hemisphere
+      Cells[3] = new AtmosphereCell(-60, -30, 180, 90);
+    }
+
+    public override void Simulate()
+    {
+      //Simulate summer and winter
+      for (byte season = 0; season < 2; season++)
+
+        //Simulate each cell
+        foreach (var cell in Cells)
+          SimulateCell(cell, season == 0);
+
+      Console.WriteLine("All cells completed");
+    }
+
+
+    //TODO add A* pathing after testing the ground independent method
+    private void SimulateCell(AtmosphereCell currentLocal, bool isSummer)
+    {
+      Point<WindVertex> p;
+
+      const int startLong = 0;
+      bool goingUp = currentLocal.StartLat < currentLocal.EndLat;
+
+
+      p = new Point<WindVertex>(currentLocal.StartLat, startLong, this);
+
+      WindVertex wv;
+      SeasonalWindVertex sv;
+      WindLayer wl;
+
+      float heading;
+      const byte magnitude = 1;
+
+      //Step around the great circle and simulate at every avalable point
+      do
+      {
+        heading = currentLocal.GetHeading(p.Latitude, isSummer);
+        wl = new WindLayer(magnitude, heading);
+
+        var startXY = p.AbsoluteXY;
+
+        do
+        {
+          wv = GetPoint(p);
+
+          if (isSummer)
+            sv = wv.Summer;
+          else
+            sv = wv.Winter;
+
+          sv = new SeasonalWindVertex(wl);
+
+          p.StepX();
+        } while (p.AbsoluteXY != startXY);
+
+        //Step towards the pole
+        if (goingUp)
+          p.StepY();
+        else
+          p.StepY(-1);
+      } while (Math.Abs(p.Latitude) <= Math.Abs(currentLocal.EndLat));
+
+      Console.WriteLine($"Finished {(isSummer ? "Summer" : "Winter")} \t in the {currentLocal.StartLat},{currentLocal.EndLat} cell");
+    }
+
+    private void SimulatePath(Point<WindVertex> p, AtmosphereCell currentLocal, bool isSummer)
+    {
+      Head h = new Head(p, currentLocal, PathAccuracy, isSummer);
+
+      h.Start();
+
+      throw new System.NotImplementedException();
+    }
+  }
 }

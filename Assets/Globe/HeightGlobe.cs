@@ -1,12 +1,15 @@
-using Pinpoint.Globe.Vertexes;
+using Pinpoint.Globes.Vertexes;
 
-namespace Pinpoint.Globe
+namespace Pinpoint.Globes
 {
-    public class HeightGlobe : AAttributeGlobe<HeightVertex>
+  public class HeightGlobe : GlobeVertexes<HeightVertex>
+  {
+    public HeightGlobe(int resolution) : base(resolution)
+    { }
+
+    public override void Simulate()
     {
-        public override void Simulate()
-        {
-            System.Console.WriteLine("Finished building height mesh");
-        }
+      System.Console.WriteLine("Finished building height mesh");
     }
+  }
 }

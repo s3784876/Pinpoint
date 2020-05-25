@@ -1,155 +1,186 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Net;
-using Pinpoint.Globe;
+using Pinpoint.Globes;
+using System.Collections.Generic;
 
-namespace Pinpoint.Globe.Vertexes
+namespace Pinpoint.Globes.Vertexes
 {
-    public class HeightVertex : IInterpolatable<HeightVertex>
+  public class HeightVertex : IInterpolatable<HeightVertex>
+  {
+    float InitialHeight;
+    public float CurrentHeight { get; private set; }
+
+
+
+    Grouping<ClimateVertex> Climate;
+    Grouping<WindVertex> Wind;
+
+    //Stores 4 bits of information relevent to plotting errosion
+    /*  Bit 1   Has Vegitation
+        Bit 2   Is River
+        Bit 3   Is Ocean/lake
+     */
+    private byte _Covering;
+
+
+    //Tile has vegitation when the gradient to nearby tiles is less than a threshold amount, and rainfall in the area is above a threshold
+    public bool HasVegitation
     {
-        float initialHeight;
-        float currentHeight;
-
-        Interpolation<ClimateVertex> climate;
-        Interpolation<WindVertex> wind;
-
-        //Stores 4 bits of information relevent to plotting errosion
-        /*  Bit 1   Has Vegitation
-            Bit 2   Is River
-            Bit 3   Is Ocean
-         */
-        private byte _Covering;
-
-
-        //Tile has vegitation when the gradient to nearby tiles is less than a threshold amount, and rainfall in the area is above a threshold
-        public bool HasVegitation
+      get
+      {
+        return (_Covering & 0b_0001) != 0;
+      }
+      set
+      {
+        byte mask;
+        if (value)
         {
-            get
-            {
-                return (_Covering & 0b_0001) != 0;
-            }
-            set
-            {
-                byte mask;
-                if (value)
-                {
-                    mask = 0b_0001;
-                    //set bit 1 true
-                    _Covering |= mask;
-                }
-                else
-                {
-                    //set flase
-                    mask = 0b_1110;
-                    _Covering &= mask;
-                }
-            }
+          mask = 0b_0001;
+          //set bit 1 true
+          _Covering |= mask;
         }
-
-        public bool IsRiver
+        else
         {
-            get
-            {
-                return (_Covering & 0b_0010) != 0;
-            }
-            set
-            {
-                byte mask;
-                if (value)
-                {
-                    mask = 0b_0010;
-                    //set bit 2 true
-                    _Covering |= mask;
-                }
-                else
-                {
-                    //set flase
-                    mask = 0b_1101;
-                    _Covering &= mask;
-                }
-            }
+          //set flase
+          mask = 0b_1110;
+          _Covering &= mask;
         }
-
-        //Tile will be configered as ocean during construction
-        public bool IsOcean
-        {
-            get
-            {
-                return (_Covering & 0b_0100) != 0;
-            }
-            set
-            {
-                byte mask;
-                if (value)
-                {
-                    mask = 0b_0100;
-                    //set bit 1 true
-                    _Covering |= mask;
-                }
-                else
-                {
-                    //set flase
-                    mask = 0b_1011;
-                    _Covering &= mask;
-                }
-            }
-        }
-
-        public HeightVertex(float initialHeight, float currentHeight, ClimateVertex climate, WindVertex wind, bool isRiver, bool hasVegitation, bool IsOcean)
-        {
-            this.initialHeight = initialHeight;
-            this.currentHeight = currentHeight;
-            this.climate = climate;
-            this.wind = wind;
-            this.IsRiver = isRiver;
-            this.HasVegitation = hasVegitation;
-            this.IsOcean = IsOcean;
-        }
-
-        public HeightVertex(HeightVertex hv)
-        {
-            this.initialHeight = hv.initialHeight;
-            this.currentHeight = hv.currentHeight;
-            this.climate = hv.climate;
-            this.wind = hv.wind;
-            this.IsRiver = hv.IsRiver;
-            this.HasVegitation = hv.HasVegitation;
-            this.IsOcean = hv.IsOcean;
-        }
-
-        public HeightVertex Interpolate(HeightVertex opponent, float opponentWeight)
-        {
-            //Divide each weight by 2 so that when added they sum to make the average
-            HeightVertex hv1 = Scale((1 - opponentWeight) / 2),
-            hv2 = opponent.Scale(opponentWeight / 2);
-
-            hv1.initialHeight += hv2.initialHeight;
-            hv1.currentHeight += hv2.currentHeight;
-
-            if (opponentWeight > 0.5)
-            {
-                hv1.HasVegitation = hv2.HasVegitation;
-                hv1.IsRiver = hv2.IsRiver;
-            }
-
-            return hv1;
-        }
-        public HeightVertex Scale(float weight)
-        {
-            HeightVertex hv = new HeightVertex(this);
-
-            hv.currentHeight *= weight;
-            hv.initialHeight *= weight;
-
-            return hv;
-        }
-
-        public bool IsChild(WindVertex wv)
-        {
-
-        }
-
-        public bool IsChild(ClimateVertex cv)
-        {
-
-        }
+      }
     }
+
+    public bool IsRiver
+    {
+      get
+      {
+        return (_Covering & 0b_0010) != 0;
+      }
+      set
+      {
+        byte mask;
+        if (value)
+        {
+          mask = 0b_0010;
+          //set bit 2 true
+          _Covering |= mask;
+        }
+        else
+        {
+          //set flase
+          mask = 0b_1101;
+          _Covering &= mask;
+        }
+      }
+    }
+
+    //Tile will be configered as ocean during construction
+    public bool IsOcean
+    {
+      get
+      {
+        return (_Covering & 0b_0100) != 0;
+      }
+      set
+      {
+        byte mask;
+        if (value)
+        {
+          mask = 0b_0100;
+          //set bit 1 true
+          _Covering |= mask;
+        }
+        else
+        {
+          //set flase
+          mask = 0b_1011;
+          _Covering &= mask;
+        }
+      }
+    }
+
+    public HeightVertex(float height, ClimateVertex cv, WindVertex wv) : this(height, height, false, false, false, cv, wv)
+    { }
+
+    private HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean)
+    {
+      this.InitialHeight = initialHeight;
+      this.CurrentHeight = currentHeight;
+      this.IsRiver = isRiver;
+      this.HasVegitation = hasVegitation;
+      this.IsOcean = IsOcean;
+    }
+
+    public HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean, ClimateVertex climate, WindVertex wind) : this(initialHeight, currentHeight, isRiver, hasVegitation, IsOcean)
+    {
+      //Use the points as the only member in the grouping
+      this.Climate = new Grouping<ClimateVertex>(climate);
+      this.Wind = new Grouping<WindVertex>(wind);
+    }
+
+    public HeightVertex(float initialHeight, float currentHeight, bool isRiver, bool hasVegitation, bool IsOcean, Grouping<ClimateVertex> climate, Grouping<WindVertex> wind) : this(initialHeight, currentHeight, isRiver, hasVegitation, IsOcean)
+    {
+      this.Climate = climate;
+      this.Wind = wind;
+    }
+
+    public HeightVertex(HeightVertex hv) : this(hv.InitialHeight, hv.CurrentHeight, hv.IsRiver, hv.HasVegitation, hv.IsOcean, hv.Climate, hv.Wind)
+    { }
+
+    public HeightVertex Interpolate(HeightVertex opponent, float opponentWeight)
+    {
+      //Divide each weight by 2 so that when added they sum to make the average
+      HeightVertex hv1 = CloneScale((1 - opponentWeight) / 2),
+      hv2 = opponent.CloneScale(opponentWeight / 2);
+
+      hv1.InitialHeight += hv2.InitialHeight;
+      hv1.CurrentHeight += hv2.CurrentHeight;
+
+      if (opponentWeight > 0.5)
+      {
+        hv1.HasVegitation = hv2.HasVegitation;
+        hv1.IsRiver = hv2.IsRiver;
+      }
+
+      return hv1;
+    }
+    public HeightVertex CloneScale(float weight)
+    {
+      HeightVertex hv = new HeightVertex(this);
+
+      hv.CurrentHeight *= weight;
+      hv.InitialHeight *= weight;
+
+      return hv;
+    }
+
+    public bool IsChild(WindVertex wv)
+    {
+      return Wind.Equals(wv);
+    }
+
+    public bool IsChild(ClimateVertex cv)
+    {
+      return Climate.Equals(cv);
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is HeightVertex vertex &&
+             InitialHeight == vertex.InitialHeight &&
+             CurrentHeight == vertex.CurrentHeight &&
+             EqualityComparer<Grouping<ClimateVertex>>.Default.Equals(Climate, vertex.Climate) &&
+             EqualityComparer<Grouping<WindVertex>>.Default.Equals(Wind, vertex.Wind) &&
+             _Covering == vertex._Covering;
+    }
+
+    public override int GetHashCode()
+    {
+      int hashCode = -208916772;
+      hashCode = hashCode * -1521134295 + InitialHeight.GetHashCode();
+      hashCode = hashCode * -1521134295 + CurrentHeight.GetHashCode();
+      hashCode = hashCode * -1521134295 + EqualityComparer<Grouping<ClimateVertex>>.Default.GetHashCode(Climate);
+      hashCode = hashCode * -1521134295 + EqualityComparer<Grouping<WindVertex>>.Default.GetHashCode(Wind);
+      hashCode = hashCode * -1521134295 + _Covering.GetHashCode();
+      return hashCode;
+    }
+  }
 }
