@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 /.vscode
+=======
+*.csproj
+Library/**
+>>>>>>> 28728d19ec0e8cf80639780d47e67a1cb053e002
