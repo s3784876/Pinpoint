@@ -1,4 +1,11 @@
+<<<<<<< HEAD
+/.vscode
+=======
 *.csproj
+<<<<<<< HEAD
+Library/**
+>>>>>>> 28728d19ec0e8cf80639780d47e67a1cb053e002
+=======
 
 **/*.booproj
 **/*.pidb
@@ -47,3 +54,4 @@ Obj/
 ProjectSettings/
 temp/
 Temp/
+>>>>>>> c5356ad8ca0784f72772c474b8f9dea5608c4935
