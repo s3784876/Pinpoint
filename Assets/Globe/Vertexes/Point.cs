@@ -460,7 +460,7 @@ namespace Pinpoint.Globes.Vertexes
 
     public T GetPoint()
     {
-      return Globe.GetPoint(this);
+      return Globe.GetVertex(CubeX, CubeY, CubeZ);
     }
 
     public Mesh<T> GetMesh()

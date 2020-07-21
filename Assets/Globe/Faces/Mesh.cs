@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
 using Pinpoint.Globes.Vertexes;
+using System.Collections.Generic;
 
 namespace Pinpoint.Globes.Faces
 {
   public class Mesh<T> where T : IInterpolatable<T>
   {
-    public T[] Vertexes {get; private set;}
+    public T[] Vertexes { get; private set; }
     public readonly Vector3 LocalUp;
 
     private readonly int Resolution;
@@ -23,10 +24,10 @@ namespace Pinpoint.Globes.Faces
     public T GetPoint(float longitude, float latitude)
     {
       MapPoint(ref longitude, ref latitude);
-      return GetPoint((int)longitude, (int)(latitude));
+      return GetVertex((int)longitude, (int)(latitude));
     }
 
-    public T GetPoint(int x, int y)
+    public T GetVertex(int x, int y)
     {
       int index = x + y * Resolution;
       return GetPoint(index);
@@ -132,6 +133,23 @@ namespace Pinpoint.Globes.Faces
         latitude = y;
         return new Vector3(0, 0, (z > 0 ? 1 : -1));
       }
+    }
+
+    public override bool Equals(object obj)
+    {
+      return obj is Mesh<T> mesh &&
+             EqualityComparer<T[]>.Default.Equals(Vertexes, mesh.Vertexes) &&
+             LocalUp.Equals(mesh.LocalUp) &&
+             Resolution == mesh.Resolution;
+    }
+
+    public override int GetHashCode()
+    {
+      int hashCode = -183254997;
+      hashCode = hashCode * -1521134295 + EqualityComparer<T[]>.Default.GetHashCode(Vertexes);
+      hashCode = hashCode * -1521134295 + LocalUp.GetHashCode();
+      hashCode = hashCode * -1521134295 + Resolution.GetHashCode();
+      return hashCode;
     }
   }
 }

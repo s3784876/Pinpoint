@@ -45,7 +45,7 @@ namespace Pinpoint.Globes
               for (int yOffset = yStart;
               yOffset < yEnd; yOffset++)
               {
-                hvs[xOffset, yOffset] = heights.Faces[i].GetPoint(xOffset + x, yOffset + y);
+                hvs[xOffset, yOffset] = heights.Faces[i].GetVertex(xOffset + x, yOffset + y);
               }
             }
 
@@ -114,7 +114,7 @@ namespace Pinpoint.Globes
 
         do
         {
-          wv = GetPoint(p);
+          wv = GetVertex(p);
 
           if (isSummer)
             sv = wv.Summer;

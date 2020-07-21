@@ -52,5 +52,10 @@
         "temp/": true,
         "Temp/": true,
         "Planning/":true
-    }
+    },
+    "cSpell.words": [
+        "Clim",
+        "Fick",
+        "Hijmans"
+    ]
 }

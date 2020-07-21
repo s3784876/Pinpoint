@@ -1,14 +1,14 @@
 ﻿
 using System;
-using static Testing.UnitTest;
+using static Pinpoint.Testing.UnitTest;
 
 namespace Pinpoint
 {
-    class Program
+  class Program
+  {
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Tests passed: " + TestAll());
-        }
+      Console.WriteLine("All Tests passed: " + TestAll());
     }
+  }
 }

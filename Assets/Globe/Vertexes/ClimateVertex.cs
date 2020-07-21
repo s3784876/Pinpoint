@@ -62,7 +62,7 @@ namespace Pinpoint.Globes.Vertexes
       return isSummer ? summer : winter;
     }
 
-    #region climate clasification
+    #region climate classification
     //Simplified Koppen Climate Classification
     public enum Climate
     {
@@ -131,7 +131,7 @@ namespace Pinpoint.Globes.Vertexes
 
     private Climate TropicalCell()
     {
-      float averageRain = (summer.AnualRain + winter.AnualRain) / 2;
+      float averageRain = (summer.AnnualRain + winter.AnnualRain) / 2;
       float threshold = 100 - (averageRain / 25.0f);
 
       //Tropical Climates
@@ -142,9 +142,9 @@ namespace Pinpoint.Globes.Vertexes
       //Desert has been moved up here to catch some edge cases that savannah would eclipse
       else if (IsDesert())
         return Climate.Hot_Desert;
-      else if (winter.AnualRain / 12 < 60)
+      else if (winter.AnnualRain / 12 < 60)
       {
-        if (winter.AnualRain / 12 >= threshold)
+        if (winter.AnnualRain / 12 >= threshold)
           return Climate.Tropical_Monsoon;
         else
           return Climate.Tropical_Savannah;
@@ -158,21 +158,21 @@ namespace Pinpoint.Globes.Vertexes
 
     private Climate MidLatitudeCell(int latitude)
     {
-      float seasonalRainVariation = winter.AnualRain == 0 ?
+      float seasonalRainVariation = winter.AnnualRain == 0 ?
                                       float.PositiveInfinity :
-                                      (summer.AnualRain / winter.AnualRain - 1);
+                                      (summer.AnnualRain / winter.AnnualRain - 1);
       seasonalRainVariation *= seasonalRainVariation;
 
-      if (latitude > 60 || (latitude >= 45 && winter.Tempreture < 0))
+      if (latitude > 60 || (latitude >= 45 && winter.Temperature < 0))
         return Climate.Continental_Subarctic;
 
-      else if (latitude < 45 && winter.Tempreture > 0 && summer.AnualRain / 12 >= 30)
+      else if (latitude < 45 && winter.Temperature > 0 && summer.AnnualRain / 12 >= 30)
         return Climate.Subtropical_Mediterranean;
 
-      else if (winter.Tempreture > 0 && summer.Tempreture > 22)
+      else if (winter.Temperature > 0 && summer.Temperature > 22)
         return Climate.Subtropical_Humid;
 
-      else if (winter.Tempreture > 0 && summer.Tempreture > 10 && seasonalRainVariation < 0.5)
+      else if (winter.Temperature > 0 && summer.Temperature > 10 && seasonalRainVariation < 0.5)
         return Climate.Subtropical_Oceanic;
 
       else if (IsDesert())
@@ -187,7 +187,7 @@ namespace Pinpoint.Globes.Vertexes
 
     private Climate PolarCell()
     {
-      if (summer.Tempreture > 0)
+      if (summer.Temperature > 0)
         return Climate.Polar_Tundra;
       else
         return Climate.Polar_Ice_Caps;
@@ -195,27 +195,27 @@ namespace Pinpoint.Globes.Vertexes
 
     private int PrecipitationScore(float totalRain)
     {
-      int precipitationScore = (summer.Tempreture + winter.Tempreture) * 10;
+      int precipitationScore = (summer.Temperature + winter.Temperature) * 10;
 
-      if (summer.AnualRain >= 0.7 * totalRain)
+      if (summer.AnnualRain >= 0.7 * totalRain)
         precipitationScore += 280;
-      else if (summer.AnualRain >= 0.3 * totalRain)
+      else if (summer.AnnualRain >= 0.3 * totalRain)
         precipitationScore += 140;
 
       return precipitationScore;
     }
 
-    //Returns true if climate matches BW clasification
+    //Returns true if climate matches BW classification
     private bool IsDesert()
     {
-      float totalRain = (summer.AnualRain + winter.AnualRain) / 2;
+      float totalRain = (summer.AnnualRain + winter.AnnualRain) / 2;
 
       return totalRain < 0.5 * PrecipitationScore(totalRain);
     }
 
     private bool IsSteppe()
     {
-      float totalRain = (summer.AnualRain + winter.AnualRain) / 2;
+      float totalRain = (summer.AnnualRain + winter.AnnualRain) / 2;
       int precipitationScore = PrecipitationScore(totalRain);
 
       return totalRain > 0.5 * precipitationScore
@@ -261,10 +261,15 @@ namespace Pinpoint.Globes.Vertexes
       this.seasons = cv.seasons;
     }
 
-    public ClimateVertex(float summerRain, sbyte summerTempreture, float winterRain, sbyte winterTempreture, Grouping<WindVertex> g)
+    public ClimateVertex(float summerRain, sbyte summerTemperature, float winterRain, sbyte winterTemperature)
     {
-      summer = new SeasonVertex(1, summerRain, 1, summerTempreture);
-      winter = new SeasonVertex(1, winterRain, 1, winterTempreture);
+      summer = new SeasonVertex(1, summerRain, 1, summerTemperature);
+      winter = new SeasonVertex(1, winterRain, 1, winterTemperature);
+
+    }
+
+    public ClimateVertex(float summerRain, sbyte summerTemperature, float winterRain, sbyte winterTemperature, Grouping<WindVertex> g) : this(summerRain, summerTemperature, winterRain, winterTemperature)
+    {
 
       WindVertex = g.Get();
     }
@@ -281,9 +286,9 @@ namespace Pinpoint.Globes.Vertexes
         SeasonVertex sv1 = CloneScale((1 - opponentWeight) / 2),
           sv2 = opponent.CloneScale(opponentWeight / 2);
 
-        sv1._AnualRain += sv2._AnualRain;
+        sv1._AnnalRain += sv2._AnnalRain;
         sv1._Humidity += sv2._Humidity;
-        sv1._Tempreture += sv2._Tempreture;
+        sv1._Temperature += sv2._Temperature;
         sv1._SoilHardness += sv2._SoilHardness;
 
         return sv1;
@@ -292,10 +297,10 @@ namespace Pinpoint.Globes.Vertexes
       {
         SeasonVertex sv = new SeasonVertex(this);
 
-        sv.AnualRain *= weight;
+        sv.AnnualRain *= weight;
         sv.Humidity *= weight;
         sv.SoilHardness *= weight;
-        sv.Tempreture = (sbyte)(sv.Tempreture * weight);
+        sv.Temperature = (sbyte)(sv.Temperature * weight);
 
         return sv;
       }
@@ -304,8 +309,8 @@ namespace Pinpoint.Globes.Vertexes
       {
         return obj is SeasonVertex vertex &&
                _SoilHardness == vertex._SoilHardness &&
-               _AnualRain == vertex._AnualRain &&
-               _Tempreture == vertex._Tempreture &&
+               _AnnalRain == vertex._AnnalRain &&
+               _Temperature == vertex._Temperature &&
                _Humidity == vertex._Humidity;
       }
 
@@ -313,8 +318,8 @@ namespace Pinpoint.Globes.Vertexes
       {
         int hashCode = 465157026;
         hashCode = hashCode * -1521134295 + _SoilHardness.GetHashCode();
-        hashCode = hashCode * -1521134295 + _AnualRain.GetHashCode();
-        hashCode = hashCode * -1521134295 + _Tempreture.GetHashCode();
+        hashCode = hashCode * -1521134295 + _AnnalRain.GetHashCode();
+        hashCode = hashCode * -1521134295 + _Temperature.GetHashCode();
         hashCode = hashCode * -1521134295 + _Humidity.GetHashCode();
         return hashCode;
       }
@@ -324,8 +329,8 @@ namespace Pinpoint.Globes.Vertexes
 
       #region variables
       private byte _SoilHardness;
-      private byte _AnualRain;
-      private sbyte _Tempreture;
+      private byte _AnnalRain;
+      private sbyte _Temperature;
       private byte _Humidity;
       #endregion
 
@@ -342,19 +347,21 @@ namespace Pinpoint.Globes.Vertexes
         }
       }
 
-      //Returns a value between 0 and 721, the max value useful for the climate clasification
-      public float AnualRain
+      //Returns a value between 0 and 721, the max value useful for the climate classification (Rainforest)
+      public float AnnualRain
       {
         get
         {
-          return (256 / (float)(_AnualRain + 1) - 1) * 721 / 255;
+          return (256 / (float)(_AnnalRain + 1) - 1) * 721 / 255;
         }
         set
         {
-          _AnualRain = (byte)Math.Round((255 * value - 183855) / (255 * value + 721));
+          _AnnalRain = (byte)Math.Round((255 * value - 183855) / (255 * value + 721));
         }
       }
 
+
+      //TODO set rainfall biased on temperature on set
       public float Humidity
       {
         get
@@ -364,18 +371,25 @@ namespace Pinpoint.Globes.Vertexes
         set
         {
           _Humidity = (byte)(value * byte.MaxValue);
+
+          //Use Magnus formula for the maximum water pressure 
+          var vaporPressure = Humidity * Math.Exp((17.625 * Temperature) / (Temperature + 243.04));
+
+          //Use Linear regression of vapor pressure to rainfall amount [1]
+
+
         }
       }
 
-      public sbyte Tempreture
+      public sbyte Temperature
       {
         get
         {
-          return _Tempreture;
+          return _Temperature;
         }
         set
         {
-          _Tempreture = value;
+          _Temperature = value;
         }
       }
       #endregion
@@ -385,17 +399,17 @@ namespace Pinpoint.Globes.Vertexes
       public SeasonVertex(SeasonVertex sv)
       {
         SoilHardness = sv.SoilHardness;
-        AnualRain = sv.AnualRain;
+        AnnualRain = sv.AnnualRain;
         Humidity = sv.Humidity;
-        Tempreture = sv.Tempreture;
+        Temperature = sv.Temperature;
       }
 
-      public SeasonVertex(float soilHardness, float rain, float humidity, sbyte tempreture)
+      public SeasonVertex(float soilHardness, float rain, float humidity, sbyte temperature)
       {
         SoilHardness = soilHardness;
-        AnualRain = rain;
+        AnnualRain = rain;
         Humidity = humidity;
-        Tempreture = tempreture;
+        Temperature = temperature;
       }
 
 
@@ -403,3 +417,9 @@ namespace Pinpoint.Globes.Vertexes
     }
   }
 }
+
+/*
+
+ [1] Fick, S.E. and R.J. Hijmans, 2017. WorldClim 2: new 1km spatial resolution climate surfaces for global land areas. International Journal of Climatology 37 (12): 4302-4315.
+
+*/

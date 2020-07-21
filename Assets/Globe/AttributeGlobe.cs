@@ -56,7 +56,7 @@ namespace Pinpoint.Globes
       return GloballyMapCoordinants(ref latitude, ref longitude);
     }
 
-    public (Faces.Mesh<T>, int, int) FindFace(int x, int y, int z)
+    protected (Faces.Mesh<T>, int, int) FindFace(int x, int y, int z)
     {
       float nx, ny, nz;
       nx = NormalizeDimension(x);
@@ -100,7 +100,7 @@ namespace Pinpoint.Globes
     }
 
     //Returns the Faces.Mesh<T> responsible for the point, and returns the x,y co-ords of the point on that mesg
-    public Faces.Mesh<T> GloballyMapCoordinants(ref float latitude, ref float longitude)
+    protected Faces.Mesh<T> GloballyMapCoordinants(ref float latitude, ref float longitude)
     {
       Mesh<T> f;
 
@@ -155,26 +155,40 @@ namespace Pinpoint.Globes
       return (int)Math.Round((x / 2 + 0.5) * Resolution, MidpointRounding.AwayFromZero);
     }
 
-    public T GetPoint(int x, int y, Vector3 localUp)
+    protected T GetVertex(int x, int y, Vector3 localUp)
     {
       foreach (var item in Faces)
       {
         if (item.LocalUp == localUp)
-          return item.GetPoint(x, y);
+          return item.GetVertex(x, y);
       }
       throw new NullReferenceException();
     }
 
-    //x,y,z are all assumed to be in the range [0,Resolution)
-    public T GetPoint(int x, int y, int z)
+    protected Point<T> GetPoint(int x, int y, Vector3 localUp)
     {
-      var (face, _x, _y) = FindFace(x, y, z);
-      return face.GetPoint(_x, _y);
+      for (int i = 0; i < Faces.Length; i++)
+      {
+        if (Faces[i].LocalUp == localUp)
+        {
+          var V3 = GetCubePosition(i, Faces[i].LocalUp, x, y);
+          return new Point<T>(V3, this);
+        }
+      }
+      throw new NullReferenceException();
+
     }
 
-    public T GetPoint(Point<T> p)
+    //x,y,z are all assumed to be in the range [0,Resolution)
+    public T GetVertex(int x, int y, int z)
     {
-      return GetPoint(p.CubeX, p.CubeY, p.CubeZ);
+      var (face, _x, _y) = FindFace(x, y, z);
+      return face.GetVertex(_x, _y);
+    }
+
+    protected T GetVertex(Point<T> p)
+    {
+      return GetVertex(p.CubeX, p.CubeY, p.CubeZ);
     }
 
     protected Vector3 GetXYZ(T v)
@@ -183,34 +197,42 @@ namespace Pinpoint.Globes
         for (int x = 0; x < Resolution; x++)
           for (int y = 0; y < Resolution; y++)
           {
-            if (Faces[i].GetPoint(x, y).Equals(v))
+            if (Faces[i].GetVertex(x, y).Equals(v))
             {
-              Vector3 result = Faces[i].LocalUp;
-
-              switch (i)
-              {
-                case ((int)FIndex.back):
-                case ((int)FIndex.front):
-                  result.x = x;
-                  result.y = y;
-                  break;
-
-                case ((int)FIndex.left):
-                case ((int)FIndex.right):
-                  result.z = x;
-                  result.y = y;
-                  break;
-
-                case ((int)FIndex.down):
-                case ((int)FIndex.up):
-                  result.z = y;
-                  result.x = x;
-                  break;
-              }
+              return GetCubePosition(i, Faces[i].LocalUp, x, y);
             }
           }
 
       throw new IndexOutOfRangeException();
+    }
+
+    private static Vector3 GetCubePosition(int faceID, Vector3 localUp, int x, int y)
+    {
+      switch (faceID)
+      {
+        case ((int)FIndex.back):
+        case ((int)FIndex.front):
+          localUp.x = x;
+          localUp.y = y;
+          break;
+
+        case ((int)FIndex.left):
+        case ((int)FIndex.right):
+          localUp.z = x;
+          localUp.y = y;
+          break;
+
+        case ((int)FIndex.down):
+        case ((int)FIndex.up):
+          localUp.z = y;
+          localUp.x = x;
+          break;
+
+        default:
+          throw new IndexOutOfRangeException();
+      }
+
+      return localUp;
     }
 
     protected Point<T> GetPoint(T v)

@@ -58,14 +58,14 @@ namespace Pinpoint.Testing
     public static bool TestWindMapping()
     {
 
-      WindGlobe w = new WindGlobe(100, new HeightGlobe(100*10));
+      WindGlobe w = new WindGlobe(100, new HeightGlobe(100 * 10));
       try
       {
         w.Simulate();
       }
       catch (Exception ex)
       {
-          PrintError("Wind Mapping", ex);
+        PrintError("Wind Mapping", ex);
         return false;
       }
 

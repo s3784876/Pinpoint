@@ -38,7 +38,7 @@ namespace Pinpoint.Globes
 
         //Backtrack along path keeping track of humidity and tempreture as it does so
         var season = cv.GetSeason(isSummer);
-
+        BackTrack(ref season, path, isSummer);
 
       }
 
@@ -84,14 +84,17 @@ namespace Pinpoint.Globes
       return vertices.ToArray();
     }
 
-    private void BackTrack(ref SeasonVertex season, ClimateVertex[] path)
+    private void BackTrack(ref SeasonVertex season, ClimateVertex[] path, bool isSummer)
     {
       float humidity = 0, tempreture = 0;
       foreach (var item in path)
       {
         humidity = GetHumidity(item, humidity);
-        tempreture = GetTemprature(item, tempreture);
+        tempreture = GetTemprature(item, tempreture, isSummer);
       }
+
+      season.Temperature = (sbyte)tempreture;
+      season.Humidity = humidity;
     }
 
     private static float GetHumidity(ClimateVertex cv, float currentHumidity)
@@ -121,12 +124,12 @@ namespace Pinpoint.Globes
     private const float HEIGHT_TEMP_GRADIENT = -1 / 150f;
 
 
-    private float GetTemprature(ClimateVertex climateVertex, float currentTempreture)
+    private float GetTemprature(ClimateVertex climateVertex, float currentTempreture, bool isSummer)
     {
 
       var heights = climateVertex.HeightVertexes.GetElements();
 
-      float equilibriumPoint = LATITUDE_TEMP_GRADIENT * GetPoint(climateVertex).Latitude + LATITUDE_TEMP_OFFSET * heights.Length;
+      float equilibriumPoint = LATITUDE_TEMP_GRADIENT * GetAdjustedLatitude(climateVertex, isSummer) + LATITUDE_TEMP_OFFSET * heights.Length;
 
       foreach (var hv in heights)
       {
@@ -146,5 +149,12 @@ namespace Pinpoint.Globes
       //Alternative cubic formula
       //return (float)(-Math.Pow(x - equilibriumPoint, 3) / Math.Abs(x - equilibriumPoint) * equlibriumStrength);
     }
+
+
+    private float GetAdjustedLatitude(ClimateVertex climateVertex, bool isSummer)
+    {
+      return Math.Abs(GetPoint(climateVertex).Latitude) + (isSummer ? 15 : -15);
+    }
   }
+
 }
